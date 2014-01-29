@@ -1,5 +1,10 @@
 package com.rwtema.denseores;
 
+/* 
+ * Dense ore entry
+ * 
+ * holds data for when we need it
+ */
 public class DenseOre {
 	String baseBlock;
 	int metadata;

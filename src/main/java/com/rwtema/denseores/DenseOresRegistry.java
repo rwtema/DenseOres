@@ -11,6 +11,7 @@ public class DenseOresRegistry {
 
 	public static Map<Integer, DenseOre> ores = new HashMap<Integer, DenseOre>();
 
+	// add vanilla entries (TODO: add a way to disable vanilla ores)
 	public static void initVanillaOres() {
 		registerOre(0, "minecraft:iron_ore", 0, 1, "stone", "iron_ore");
 		registerOre(1, "minecraft:gold_ore", 0, 1, "stone", "gold_ore");
@@ -23,14 +24,15 @@ public class DenseOresRegistry {
 
 	}
 
+	// create the blocks needed
 	public static void buildBlocks() {
 		for (DenseOre ore : ores.values()) {
 			int bId = ore.id / 16;
 			BlockDenseOre newBlock = blocks.get(bId);
 			if (newBlock == null) {
-				newBlock = (BlockDenseOre) ((new BlockDenseOre()).func_149663_c("specialores:block" + bId).func_149711_c(3));
+				newBlock = (BlockDenseOre) ((new BlockDenseOre()).func_149663_c(DenseOresMod.MODID + ":block" + bId).func_149711_c(3));
 				blocks.put(bId, newBlock);
-				GameRegistry.registerBlock(newBlock, ItemBlockDenseOre.class, "specialores:block" + bId);
+				GameRegistry.registerBlock(newBlock, ItemBlockDenseOre.class, DenseOresMod.MODID + ":block" + bId);
 			}
 
 			newBlock.setEntry(ore.id % 16, ore);
