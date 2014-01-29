@@ -82,12 +82,13 @@ public class TextureOre extends TextureAtlasSprite {
 	 */
 	// is not correct - return TRUE to prevent this Icon from being stitched
 	// (makes no sense but... whatever)
-	
-	// this code is based on code from TextureMap.loadTextureAtlas, only with the
+
+	// this code is based on code from TextureMap.loadTextureAtlas, only with
+	// the
 	// code for custom mip-mapping textures and animation removed.
 	// TODO: add animation support
 	// TODO: add check for textures being of different sizes
-	
+
 	public boolean load(IResourceManager manager, ResourceLocation location) {
 
 		// get mipmapping level
@@ -131,9 +132,10 @@ public class TextureOre extends TextureAtlasSprite {
 			int h = w;
 
 			// check to see which pixels are different
-			boolean[] diff = new boolean[w * w];
+
+			boolean[] same = new boolean[w * w];
 			for (int i = 0; i < ore_data.length; i += 1) {
-				diff[i] = ore_data[i] == stone_data[i];
+				same[i] = ore_data[i] == stone_data[i];
 				new_data[i] = ore_data[i];
 			}
 
@@ -143,22 +145,25 @@ public class TextureOre extends TextureAtlasSprite {
 				int x = (i % w);
 				int y = (i - x) / w;
 
-				// if a pixel is part of the stone texture it should change if possible
-				boolean shouldChange = diff[i];
+				// if a pixel is part of the stone texture it should change if
+				// possible
+				boolean shouldChange = same[i];
 
-				// compare the pixel to its rotated counterparts and change it if the rotated pixel
-				// is 'different' from the stone texture and is either brighter or the original pixel
+				// compare the pixel to its rotated counterparts and change it
+				// if the rotated pixel
+				// is 'different' from the stone texture and is either brighter
+				// or the original pixel
 				// was marked as 'shouldChange'.
-				
-				if (!diff[ore_data.length - 1 - i] && (!shouldChange || lum(new_data[i]) < lum(ore_data[ore_data.length - 1 - i]))) {
+
+				if (!same[ore_data.length - 1 - i] && (shouldChange || lum(new_data[i]) < lum(ore_data[ore_data.length - 1 - i]))) {
 					shouldChange = false;
 					new_data[i] = ore_data[ore_data.length - 1 - i];
 				}
-				if (!diff[y + (w - 1 - x) * w] && (!shouldChange || lum(new_data[i]) < lum(ore_data[y + (w - 1 - x) * w]))) {
+				if (!same[y + (w - 1 - x) * w] && (shouldChange || lum(new_data[i]) < lum(ore_data[y + (w - 1 - x) * w]))) {
 					shouldChange = false;
 					new_data[i] = ore_data[y + (w - 1 - x) * w];
 				}
-				if (!diff[(w - 1 - y) + x * w] && (!shouldChange || lum(new_data[i]) < ore_data[(w - 1 - y) + x * w])) {
+				if (!same[(w - 1 - y) + x * w] && (shouldChange || lum(new_data[i]) < lum(ore_data[(w - 1 - y) + x * w]))) {
 					shouldChange = false;
 					new_data[i] = ore_data[(w - 1 - y) + x * w];
 				}
@@ -166,12 +171,13 @@ public class TextureOre extends TextureAtlasSprite {
 			}
 
 			// write the new image data to the output image buffer
-			output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), ore_data, 0, output_image.getWidth());
+			output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
 
 			// replace the old texture
 			ore_image[0] = output_image;
 
-			// load the texture (not the null is where animation data would normally go)
+			// load the texture (not the null is where animation data would
+			// normally go)
 			this.func_147964_a(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.field_151443_J > 1.0F);
 		} catch (IOException e) {
 			return true;
