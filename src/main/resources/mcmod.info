@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "denseores",
+  "name": "Dense Ores",
+  "description": "Adds a new ore variant to the game",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authors": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authors": ["RWTema"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
