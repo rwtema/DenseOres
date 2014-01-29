@@ -139,6 +139,9 @@ public class TextureOre extends TextureAtlasSprite {
 				new_data[i] = ore_data[i];
 			}
 
+			int dx[] = new int[] { -1, 2, 3 };
+			int dy[] = new int[] { -1, 0, 1 };
+
 			// where the magic happens
 
 			for (int i = 0; i < ore_data.length; i += 1) {
@@ -149,23 +152,21 @@ public class TextureOre extends TextureAtlasSprite {
 				// possible
 				boolean shouldChange = same[i];
 
-				// compare the pixel to its rotated counterparts and change it
+				// compare the pixel to its shifted counterparts and change it
 				// if the rotated pixel
 				// is 'different' from the stone texture and is either brighter
 				// or the original pixel
 				// was marked as 'shouldChange'.
 
-				if (!same[ore_data.length - 1 - i] && (shouldChange || lum(new_data[i]) < lum(ore_data[ore_data.length - 1 - i]))) {
-					shouldChange = false;
-					new_data[i] = ore_data[ore_data.length - 1 - i];
-				}
-				if (!same[y + (w - 1 - x) * w] && (shouldChange || lum(new_data[i]) < lum(ore_data[y + (w - 1 - x) * w]))) {
-					shouldChange = false;
-					new_data[i] = ore_data[y + (w - 1 - x) * w];
-				}
-				if (!same[(w - 1 - y) + x * w] && (shouldChange || lum(new_data[i]) < lum(ore_data[(w - 1 - y) + x * w]))) {
-					shouldChange = false;
-					new_data[i] = ore_data[(w - 1 - y) + x * w];
+				for (int j = 0; j < dx.length; j++) {
+					if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
+						if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange
+						// || lum(new_data[i]) > lum(ore_data[(x + dx[j]) + (y +
+						// dy[j]) * w])
+								)) {
+							shouldChange = false;
+							new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
+						}
 				}
 
 			}
@@ -176,7 +177,7 @@ public class TextureOre extends TextureAtlasSprite {
 			// replace the old texture
 			ore_image[0] = output_image;
 
-			// load the texture (not the null is where animation data would
+			// load the texture (note the null is where animation data would
 			// normally go)
 			this.func_147964_a(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.field_151443_J > 1.0F);
 		} catch (IOException e) {
@@ -185,6 +186,18 @@ public class TextureOre extends TextureAtlasSprite {
 
 		System.out.println("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
 		return false;
+	}
+
+	// get the lighter of two colors
+	public int lighten(int col_a, int col_b) {
+		// get rgb values from color
+		// note that you need to use -col as the color format is always negative
+
+		int r = Math.min(((-col_a) >> 16 & 255), ((-col_b) >> 16 & 255));
+		int g = Math.min(((-col_a) >> 8 & 255), ((-col_b) >> 8 & 255));
+		int b = Math.min(((-col_a) & 255), ((-col_b) & 255));
+
+		return -(r << 16 | g << 8 | b);
 	}
 
 	// get luminance from color
