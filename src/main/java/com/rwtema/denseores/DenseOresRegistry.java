@@ -30,7 +30,8 @@ public class DenseOresRegistry {
 			int bId = ore.id / 16;
 			BlockDenseOre newBlock = blocks.get(bId);
 			if (newBlock == null) {
-				newBlock = (BlockDenseOre) ((new BlockDenseOre()).func_149663_c(DenseOresMod.MODID + ":block" + bId).func_149711_c(3));
+				
+				newBlock = (BlockDenseOre) ((new BlockDenseOre()).setBlockName(DenseOresMod.MODID + ":block" + bId).setHardness(3));
 				blocks.put(bId, newBlock);
 				GameRegistry.registerBlock(newBlock, ItemBlockDenseOre.class, DenseOresMod.MODID + ":block" + bId);
 			}

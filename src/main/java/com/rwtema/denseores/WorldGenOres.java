@@ -22,15 +22,13 @@ public class WorldGenOres implements IWorldGenerator {
 			int y = 1 + random.nextInt(80);
 			int z = (chunkZ << 4) + random.nextInt(16);
 
-			// func_147439_a is the new getBlock method. Note it returns the
-			// block class now (not the id)
-			Block block = world.func_147439_a(x, y, z);
+			Block block = world.getBlock(x, y, z);
 
 			for (BlockDenseOre dense_ore_blocks : DenseOresRegistry.blocks.values()) {
 				for (int id = 0; id < 16; id++) {
 					if (dense_ore_blocks.isValid(id)) {
 						if (block == dense_ore_blocks.getBlock(id) && world.getBlockMetadata(x, y, z) == dense_ore_blocks.entry[id].metadata) {
-							world.func_147465_d(x, y, z, dense_ore_blocks, id, 3);
+							world.setBlock(x, y, z, dense_ore_blocks, id, 3);
 							continue;
 						}
 					}

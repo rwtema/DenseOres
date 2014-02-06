@@ -78,10 +78,10 @@ public class BlockDenseOre extends BlockOre {
 	// add creative blocks
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void func_149666_a(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_) {
+	public void getSubBlocks(Item item, CreativeTabs tab, List list) {
 		for (int i = 0; i < 16; i++)
 			if (isValid(i))
-				p_149666_3_.add(new ItemStack(p_149666_1_, 1, i));
+				list.add(new ItemStack(item, 1, i));
 
 	}
 
@@ -90,8 +90,7 @@ public class BlockDenseOre extends BlockOre {
 	// get icon from side/metadata
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon func_149691_a(int side, int meta) {
-
+	public IIcon getIcon(int side, int meta) {
 		return icons[meta];
 
 	}
@@ -99,7 +98,7 @@ public class BlockDenseOre extends BlockOre {
 	// register icons
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void func_149651_a(IIconRegister register) {
+	public void registerBlockIcons(IIconRegister register) {
 		if (register instanceof TextureMap) { // should always be true (...but
 												// you never know)
 			TextureMap map = (TextureMap) register;
@@ -126,8 +125,8 @@ public class BlockDenseOre extends BlockOre {
 
 	// metadata dropped
 	@Override
-	public int func_149692_a(int p_149692_1_) {
-		return p_149692_1_;
+	public int damageDropped(int meta) {
+		return meta;
 	}
 
 	// get drops
@@ -142,9 +141,9 @@ public class BlockDenseOre extends BlockOre {
 			for (int j = 0; j < 3; j++) {
 				int count = quantityDropped(m, fortune, world.rand);
 				for (int i = 0; i < count; i++) {
-					Item item = base.func_149650_a(m, world.rand, fortune);
+					Item item = base.getItemDropped(m, world.rand, fortune);
 					if (item != null) {
-						ret.add(new ItemStack(item, 1, base.func_149692_a(m)));
+						ret.add(new ItemStack(item, 1, base.damageDropped(m)));
 					}
 				}
 			}
@@ -154,16 +153,16 @@ public class BlockDenseOre extends BlockOre {
 
 	// get hardness
 	@Override
-	public float func_149712_f(World world, int x, int y, int z) {
+	public float getBlockHardness(World world, int x, int y, int z) {
 		int metadata = world.getBlockMetadata(x, y, z);
 		if (isValid(metadata)) {
 			Block base = getBlock(metadata);
-			float t = this.field_149782_v;
+			float t = this.blockHardness;
 
 			// quickly change metadata to match what is expected
 			world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0);
 			try {
-				t = base.func_149712_f(world, x, y, z);
+				t = base.getBlockHardness(world, x, y, z);
 			} catch (Exception e) {
 				// oh oh, it seems it didn't like having a different block id.
 				System.out.println("The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
@@ -179,7 +178,7 @@ public class BlockDenseOre extends BlockOre {
 			world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
 			return t;
 		}
-		return this.field_149782_v;
+		return this.blockHardness;
 	}
 
 }

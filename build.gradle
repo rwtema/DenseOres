@@ -22,7 +22,7 @@ group= "com.yourname.modid" // http://maven.apache.org/guides/mini/guide-naming-
 archivesBaseName = "modid"
 
 minecraft {
-    version = "1.7.2-10.12.0.1019"
+    version = "1.7.2-10.12.0.1024"
     assetDir = "eclipse/assets"
 }
 processResources

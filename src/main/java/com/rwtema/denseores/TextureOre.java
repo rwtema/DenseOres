@@ -2,14 +2,16 @@ package com.rwtema.denseores;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import javax.imageio.ImageIO;
+
+import scala.reflect.internal.Trees.Modifiers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.util.ResourceLocation;
 
 // Custom texture class to handle the ore generation
@@ -92,7 +94,7 @@ public class TextureOre extends TextureAtlasSprite {
 	public boolean load(IResourceManager manager, ResourceLocation location) {
 
 		// get mipmapping level
-		int mp = Minecraft.getMinecraft().gameSettings.field_151442_I;
+		int mp = Minecraft.getMinecraft().gameSettings.mipmapLevels;
 
 		try {
 			IResource iresource = manager.getResource(getBlockResource(name));
@@ -161,7 +163,8 @@ public class TextureOre extends TextureAtlasSprite {
 				for (int j = 0; j < dx.length; j++) {
 					if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
 						if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange
-						// || lum(new_data[i]) > lum(ore_data[(x + dx[j]) + (y +
+						// || lum(new_data[i]) > lum(ore_data[(x +
+						// dx[j]) + (y +
 						// dy[j]) * w])
 								)) {
 							shouldChange = false;
@@ -179,7 +182,8 @@ public class TextureOre extends TextureAtlasSprite {
 
 			// load the texture (note the null is where animation data would
 			// normally go)
-			this.func_147964_a(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.field_151443_J > 1.0F);
+
+			this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
 		} catch (IOException e) {
 			return true;
 		}

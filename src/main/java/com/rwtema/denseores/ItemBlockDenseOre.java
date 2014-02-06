@@ -9,10 +9,10 @@ public class ItemBlockDenseOre extends ItemBlock {
 	BlockDenseOre oreBlock;
 
 	// construct an itemblock for the given block. (Note: no itemid!)
-	public ItemBlockDenseOre(Block p_i45328_1_) {
-		super(p_i45328_1_);
+	public ItemBlockDenseOre(Block block) {
+		super(block);
 		// oreBlock should always be a BlockDenseOre
-		oreBlock = (BlockDenseOre) p_i45328_1_;
+		oreBlock = (BlockDenseOre) block;
 	}
 
 	public int getMetadata(int par1) {
