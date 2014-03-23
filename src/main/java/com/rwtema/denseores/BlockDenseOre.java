@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -15,7 +17,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -73,6 +77,10 @@ public class BlockDenseOre extends BlockOre {
 
 	public void setEntry(int id, DenseOre ore) {
 		this.entry[id] = ore;
+	}
+
+	public DenseOre getEntry(int id) {
+		return entry[id];
 	}
 
 	// add creative blocks
@@ -139,7 +147,7 @@ public class BlockDenseOre extends BlockOre {
 
 			// get base drops 3 times
 			for (int j = 0; j < 3; j++) {
-				int count = quantityDropped(m, fortune, world.rand);
+				int count = base.quantityDropped(m, fortune, world.rand);
 				for (int i = 0; i < count; i++) {
 					Item item = base.getItemDropped(m, world.rand, fortune);
 					if (item != null) {
@@ -165,13 +173,20 @@ public class BlockDenseOre extends BlockOre {
 				t = base.getBlockHardness(world, x, y, z);
 			} catch (Exception e) {
 				// oh oh, it seems it didn't like having a different block id.
-				System.out.println("The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
-						+ " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores");
+				FMLCommonHandler
+						.instance()
+						.getFMLLogger()
+						.log(Level.ERROR,
+								"The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
+										+ " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores");
+
 				e.printStackTrace();
 				world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just
 																						// in
 																						// case
-				throw new RuntimeException(e);
+				RuntimeException err = new RuntimeException(e);
+
+				throw err;
 			}
 
 			// set it back

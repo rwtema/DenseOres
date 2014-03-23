@@ -1,15 +1,10 @@
 package com.rwtema.denseores;
 
-import java.util.Map.Entry;
-
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLModIdMappingEvent;
-import cpw.mods.fml.common.event.FMLModIdMappingEvent.ModRemapping;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION)
@@ -27,7 +22,9 @@ public class DenseOresMod {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		GameRegistry.registerWorldGenerator(new WorldGenOres(), 1000);
+		WorldGenOres worldGen = new WorldGenOres();
+		GameRegistry.registerWorldGenerator(worldGen, 1000);
+		MinecraftForge.EVENT_BUS.register(worldGen);
 	}
 
 }

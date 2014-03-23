@@ -16,3 +16,5 @@ gradlew.bat
 .project
 forge-1.7.2-10.12.0.1024-changelog.txt
 .settings/
+build.bat
+src/main/resources/assets/test/

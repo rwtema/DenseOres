@@ -54,18 +54,19 @@ public class TextureOre extends TextureAtlasSprite {
 	public ResourceLocation getBlockResource(String s2) {
 		String s1 = "minecraft";
 
-		int ind = name.indexOf(58);
+		int ind = s2.indexOf(58);
 
 		if (ind >= 0) {
-			s2 = name.substring(ind + 1, name.length());
-
 			if (ind > 1) {
-				s1 = name.substring(0, ind);
+				s1 = s2.substring(0, ind);
 			}
+
+			s2 = s2.substring(ind + 1, s2.length());
 		}
 
 		s1 = s1.toLowerCase();
 		s2 = "textures/blocks/" + s2 + ".png";
+	;
 		return new ResourceLocation(s1, s2);
 	}
 
@@ -185,6 +186,7 @@ public class TextureOre extends TextureAtlasSprite {
 
 			this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
 		} catch (IOException e) {
+			e.printStackTrace();
 			return true;
 		}
 
