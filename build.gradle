@@ -11,22 +11,27 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
 
 apply plugin: 'forge'
 
-version = "1.0"
+version = "dev-1.1"
 group= "com.rwtema.denseores" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "denseores-1.7"
+archivesBaseName = "denseores"
 
 minecraft {
-    version = "1.7.2-10.12.0.1024"
+    version = "1.7.2-10.12.1.1065"
     assetDir = "eclipse/assets"
 }
+
 processResources
 {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'

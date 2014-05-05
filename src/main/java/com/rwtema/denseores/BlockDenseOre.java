@@ -1,28 +1,25 @@
 package com.rwtema.denseores;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.logging.log4j.Level;
-
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*  Mostly the same from 1.6.,
  *  couple of names have changed but everything works the
@@ -35,165 +32,183 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockDenseOre extends BlockOre {
 
-	// no constructor needed here but you still need to specify a material for
-	// other blocks.
+    // no constructor needed here but you still need to specify a material for
+    // other blocks.
 
-	// Ore Entry stuff
-	public DenseOre[] entry = new DenseOre[16];
-	public Block[] baseBlocks = new Block[16];
-	public boolean[] valid = new boolean[16];
-	public boolean init = false;
+    @Override
+    protected boolean canSilkHarvest() {
+        return true;
+    }
 
-	public static Block getBlock(String name) {
-		return GameData.blockRegistry.get(name);
-	}
+    @Override
+    public boolean canHarvestBlock(EntityPlayer player, int meta) {
+        if (isValid(meta))
+            return getBlock(meta).canHarvestBlock(player, getEntry(meta).metadata);
 
-	public static Block getBlock(DenseOre ore) {
-		return ore != null ? getBlock(ore.baseBlock) : null;
-	}
+        return super.canHarvestBlock(player, meta);
+    }
 
-	public void init() {
-		init = true;
+    // Ore Entry stuff
+    public DenseOre[] entry = new DenseOre[16];
+    public Block[] baseBlocks = new Block[16];
+    public boolean[] valid = new boolean[16];
+    public boolean init = false;
 
-		for (int i = 0; i < 16; i++) {
-			baseBlocks[i] = getBlock(entry[i]);
-			valid[i] = baseBlocks[i] != null;
-		}
-	}
+    public static Block getBlock(String name) {
+        return GameData.getBlockRegistry().getObject(name);
+    }
 
-	public Block getBlock(int id) {
-		if (!init)
-			init();
+    public static Block getBlock(DenseOre ore) {
+        return ore != null ? getBlock(ore.baseBlock) : null;
+    }
 
-		return baseBlocks[id];
-	}
+    public void init() {
+        init = true;
 
-	public boolean isValid(int id) {
-		if (!init)
-			init();
+        for (int i = 0; i < 16; i++) {
+            baseBlocks[i] = getBlock(entry[i]);
+            valid[i] = baseBlocks[i] != null && baseBlocks[i] != Blocks.air;
+        }
+    }
 
-		return valid[id];
-	}
+    public Block getBlock(int id) {
+        if (!init)
+            init();
 
-	public void setEntry(int id, DenseOre ore) {
-		this.entry[id] = ore;
-	}
+        return baseBlocks[id];
+    }
 
-	public DenseOre getEntry(int id) {
-		return entry[id];
-	}
+    public boolean isValid(int id) {
+        if (!init)
+            init();
 
-	// add creative blocks
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void getSubBlocks(Item item, CreativeTabs tab, List list) {
-		for (int i = 0; i < 16; i++)
-			if (isValid(i))
-				list.add(new ItemStack(item, 1, i));
+        return valid[id];
+    }
 
-	}
+    public void setEntry(int id, DenseOre ore) {
+        this.entry[id] = ore;
+    }
 
-	public IIcon[] icons = new IIcon[16];
+    public DenseOre getEntry(int id) {
+        return entry[id];
+    }
 
-	// get icon from side/metadata
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(int side, int meta) {
-		return icons[meta];
+    // add creative blocks
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void getSubBlocks(Item item, CreativeTabs tab, List list) {
+        for (int i = 0; i < 16; i++)
+            if (isValid(i))
+                list.add(new ItemStack(item, 1, i));
 
-	}
+    }
 
-	// register icons
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(IIconRegister register) {
-		if (register instanceof TextureMap) { // should always be true (...but
-												// you never know)
-			TextureMap map = (TextureMap) register;
-			for (int i = 0; i < 16; i++) {
-				if (isValid(i)) {
+    public IIcon[] icons = new IIcon[16];
 
-					// Registering custom icon classes
+    // get icon from side/metadata
+    @SideOnly(Side.CLIENT)
+    @Override
+    public IIcon getIcon(int side, int meta) {
+        return icons[meta];
 
-					// name of custom icon ( must equal getIconName() )
-					String name = TextureOre.getDerivedName(entry[i].texture);
-					// see if there's already an icon of that name
-					TextureAtlasSprite texture = map.getTextureExtry(name);
-					if (texture == null) {
-						// if not create one and put it in the register
-						texture = new TextureOre(entry[i].texture, entry[i].underlyingBlock);
-						map.setTextureEntry(name, texture);
-					}
+    }
 
-					icons[i] = map.getTextureExtry(name);
-				}
-			}
-		}
-	}
+    // register icons
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister register) {
+        if (register instanceof TextureMap) { // should always be true (...but
+            // you never know)
+            TextureMap map = (TextureMap) register;
+            for (int i = 0; i < 16; i++) {
+                if (isValid(i)) {
 
-	// metadata dropped
-	@Override
-	public int damageDropped(int meta) {
-		return meta;
-	}
+                    // Registering custom icon classes
 
-	// get drops
-	@Override
-	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-		ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-		if (isValid(metadata)) {
-			Block base = getBlock(metadata);
-			int m = entry[metadata].metadata;
+                    // name of custom icon ( must equal getIconName() )
+                    String name = TextureOre.getDerivedName(entry[i].texture);
+                    // see if there's already an icon of that name
+                    TextureAtlasSprite texture = map.getTextureExtry(name);
+                    if (texture == null) {
+                        // if not create one and put it in the register
+                        texture = new TextureOre(entry[i].texture, entry[i].underlyingBlock);
+                        map.setTextureEntry(name, texture);
+                    }
 
-			// get base drops 3 times
-			for (int j = 0; j < 3; j++) {
-				int count = base.quantityDropped(m, fortune, world.rand);
-				for (int i = 0; i < count; i++) {
-					Item item = base.getItemDropped(m, world.rand, fortune);
-					if (item != null) {
-						ret.add(new ItemStack(item, 1, base.damageDropped(m)));
-					}
-				}
-			}
-		}
-		return ret;
-	}
+                    icons[i] = map.getTextureExtry(name);
+                }
+            }
+        }
+    }
 
-	// get hardness
-	@Override
-	public float getBlockHardness(World world, int x, int y, int z) {
-		int metadata = world.getBlockMetadata(x, y, z);
-		if (isValid(metadata)) {
-			Block base = getBlock(metadata);
-			float t = this.blockHardness;
+    // metadata dropped
+    @Override
+    public int damageDropped(int meta) {
+        return meta;
+    }
 
-			// quickly change metadata to match what is expected
-			world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0);
-			try {
-				t = base.getBlockHardness(world, x, y, z);
-			} catch (Exception e) {
-				// oh oh, it seems it didn't like having a different block id.
-				FMLCommonHandler
-						.instance()
-						.getFMLLogger()
-						.log(Level.ERROR,
-								"The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
-										+ " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores");
+    // get drops
+    @Override
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
+        if (isValid(metadata)) {
+            Block base = getBlock(metadata);
 
-				e.printStackTrace();
-				world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just
-																						// in
-																						// case
-				RuntimeException err = new RuntimeException(e);
+            if (base == null)
+                return ret;
 
-				throw err;
-			}
+            int m = entry[metadata].metadata;
 
-			// set it back
-			world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
-			return t;
-		}
-		return this.blockHardness;
-	}
+            // get base drops 3 times
+            for (int j = 0; j < 3; j++) {
+                int count = base.quantityDropped(m, fortune, world.rand);
+                for (int i = 0; i < count; i++) {
+                    Item item = base.getItemDropped(m, world.rand, fortune);
+                    if (item != null) {
+                        ret.add(new ItemStack(item, 1, base.damageDropped(m)));
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    // get hardness
+    @Override
+    public float getBlockHardness(World world, int x, int y, int z) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (isValid(metadata)) {
+            Block base = getBlock(metadata);
+            float t = this.blockHardness;
+
+            // quickly change metadata to match what is expected
+            world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0);
+            try {
+                t = base.getBlockHardness(world, x, y, z);
+            } catch (Exception e) {
+                // oh oh, it seems it didn't like having a different block id.
+                FMLCommonHandler
+                        .instance()
+                        .getFMLLogger()
+                        .log(Level.ERROR,
+                                "The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
+                                        + " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores"
+                        );
+
+                e.printStackTrace();
+                world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just
+                // in
+                // case
+                RuntimeException err = new RuntimeException(e);
+
+                throw err;
+            }
+
+            // set it back
+            world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
+            return t;
+        }
+        return this.blockHardness;
+    }
 
 }
