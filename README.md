@@ -6,7 +6,7 @@ DenseOres by RWTema
 Code is provided without guarantee of being error-free or optimal.
 
 
-Download of the latest dev release: <a href="http://www.mediafire.com/download/vdjsn7m8mw1wnld/denseores-dev-1.1a.jar">http://www.mediafire.com/download/vdjsn7m8mw1wnld/denseores-dev-1.1a.jar</a>
+Download of the latest release: <a href="http://www.mediafire.com/download/7okkg0vqm2zm5z2/denseores-1.1.jar">http://www.mediafire.com/download/7okkg0vqm2zm5z2/denseores-1.1.jar</a>
 
 
 Example of a config file (adds dense ore variants of IC2 and Tinker's Construct ores): <a href="http://pastebin.com/Z19bvQDx">http://pastebin.com/Z19bvQDx</a>
