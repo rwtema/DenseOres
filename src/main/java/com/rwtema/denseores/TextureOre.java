@@ -1,225 +1,238 @@
 package com.rwtema.denseores;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.lang.reflect.Field;
-
-import javax.imageio.ImageIO;
-
-import scala.reflect.internal.Trees.Modifiers;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 // Custom texture class to handle the ore generation
 public class TextureOre extends TextureAtlasSprite {
 
-	private int n;
+    private int n;
 
-	private ResourceLocation textureLocation;
+    private ResourceLocation textureLocation;
 
-	private String name;
+    public String name;
 
-	private String base;
+    public String base;
+    public int type;
 
-	public static String getDerivedName(String par1Str) {
-		return DenseOresMod.MODID + ":" + par1Str + "_dense";
-	}
+    public BufferedImage output_image = null;
 
-	public TextureOre(String par1Str, String base) {
-		super(getDerivedName(par1Str));
-		this.name = par1Str;
-		this.base = base;
-	}
+    public static String getDerivedName(String s2) {
+        String s1 = "minecraft";
 
-	// should we use a custom loader to get our texture?
-	public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
-		try {
-			// check to see if the resource can be loaded (someone added an
-			// override)
-			manager.getResource(location);
-		} catch (IOException e) {
-			// file not found: let's generate one
-			return true;
-		}
+        int ind = s2.indexOf(58);
 
-		System.out.println("Dense Ores: Detected override for " + name);
-		return false;
-	}
+        if (ind >= 0) {
+            if (ind > 1) {
+                s1 = s2.substring(0, ind);
+            }
 
-	// converts texture name to resource location
-	public ResourceLocation getBlockResource(String s2) {
-		String s1 = "minecraft";
+            s2 = s2.substring(ind + 1, s2.length());
+        }
 
-		int ind = s2.indexOf(58);
+        s1 = s1.toLowerCase();
 
-		if (ind >= 0) {
-			if (ind > 1) {
-				s1 = s2.substring(0, ind);
-			}
+        return DenseOresMod.MODID + ":" + s1 + "/" + s2;
+    }
 
-			s2 = s2.substring(ind + 1, s2.length());
-		}
+    public TextureOre(String par1Str, String base) {
+        super(getDerivedName(par1Str));
+        this.name = par1Str;
+        this.base = base;
+    }
 
-		s1 = s1.toLowerCase();
-		s2 = "textures/blocks/" + s2 + ".png";
-	;
-		return new ResourceLocation(s1, s2);
-	}
+    // should we use a custom loader to get our texture?
+    public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
 
-	// loads the textures
-	// note: the documentation
-	/**
-	 * Load the specified resource as this sprite's data. Returning false from
-	 * this function will prevent this icon from being stitched onto the master
-	 * texture.
-	 * 
-	 * @param manager
-	 *            Main resource manager
-	 * @param location
-	 *            File resource location
-	 * @return False to prevent this Icon from being stitched
-	 */
-	// is not correct - return TRUE to prevent this Icon from being stitched
-	// (makes no sense but... whatever)
+        ResourceLocation location1 = new ResourceLocation(location.getResourceDomain(), String.format("%s/%s%s", new Object[]{"textures/blocks", location.getResourcePath(), ".png"}));
+        try {
+            // check to see if the resource can be loaded (someone added an
+            // override)
+            manager.getResource(location1);
+            LogHelper.info("Dense Ores: Detected override for " + name);
+            return false;
+        } catch (IOException e) {
+            // file not found: let's generate one
+            return true;
+        }
+    }
 
-	// this code is based on code from TextureMap.loadTextureAtlas, only with
-	// the
-	// code for custom mip-mapping textures and animation removed.
-	// TODO: add animation support
-	// TODO: add check for textures being of different sizes
+    // converts texture name to resource location
+    public static ResourceLocation getBlockResource(String s2) {
+        String s1 = "minecraft";
 
-	public boolean load(IResourceManager manager, ResourceLocation location) {
+        int ind = s2.indexOf(58);
 
-		// get mipmapping level
-		int mp = Minecraft.getMinecraft().gameSettings.mipmapLevels;
+        if (ind >= 0) {
+            if (ind > 1) {
+                s1 = s2.substring(0, ind);
+            }
 
-		try {
-			IResource iresource = manager.getResource(getBlockResource(name));
-			IResource iresourceBase = manager.getResource(getBlockResource(base));
+            s2 = s2.substring(ind + 1, s2.length());
+        }
 
-			// creates a buffer that will be used for our texture and the
-			// various mip-maps
-			// (mip-mapping is where you use smaller textures when objects are
-			// far-away
-			// see: http://en.wikipedia.org/wiki/Mipmap)
-			// these will be generated from the base texture
-			BufferedImage[] ore_image = new BufferedImage[1 + mp];
+        s1 = s1.toLowerCase();
+        s2 = "textures/blocks/" + s2 + ".png";
 
-			// load the ore texture
-			ore_image[0] = ImageIO.read(iresource.getInputStream());
+        return new ResourceLocation(s1, s2);
+    }
 
-			// load the stone texture
-			BufferedImage stone_image = ImageIO.read(iresourceBase.getInputStream());
+    // loads the textures
+    // note: the documentation
 
-			int w = ore_image[0].getWidth();
+    /**
+     * Load the specified resource as this sprite's data. Returning false from
+     * this function will prevent this icon from being stitched onto the master
+     * texture.
+     *
+     * @param manager  Main resource manager
+     * @param location File resource location
+     * @return False to prevent this Icon from being stitched
+     */
+    // is not correct - return TRUE to prevent this Icon from being stitched
+    // (makes no sense but... whatever)
 
-			// create an output image that we will use to override
-			BufferedImage output_image = new BufferedImage(w, w, ore_image[0].getType());
+    // this code is based on code from TextureMap.loadTextureAtlas, only with
+    // the
+    // code for custom mip-mapping textures and animation removed.
+    // TODO: add animation support
+    // TODO: add check for textures being of different sizes
+    public boolean load(IResourceManager manager, ResourceLocation location) {
 
-			if (w != stone_image.getWidth()) {
-				return true;
-			}
+        // get mipmapping level
+        int mp = Minecraft.getMinecraft().gameSettings.mipmapLevels;
 
-			int[] ore_data = new int[w * w];
-			int[] stone_data = new int[w * w];
-			int[] new_data = new int[w * w];
+        try {
+            IResource iresource = manager.getResource(getBlockResource(name));
+            IResource iresourceBase = manager.getResource(getBlockResource(base));
 
-			// read the rgb color data into our array
-			ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
-			stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
+            // creates a buffer that will be used for our texture and the
+            // various mip-maps
+            // (mip-mapping is where you use smaller textures when objects are
+            // far-away
+            // see: http://en.wikipedia.org/wiki/Mipmap)
+            // these will be generated from the base texture
+            BufferedImage[] ore_image = new BufferedImage[1 + mp];
 
-			int h = w;
+            // load the ore texture
+            ore_image[0] = ImageIO.read(iresource.getInputStream());
 
-			// check to see which pixels are different
+            // load the stone texture
+            BufferedImage stone_image = ImageIO.read(iresourceBase.getInputStream());
 
-			boolean[] same = new boolean[w * w];
-			for (int i = 0; i < ore_data.length; i += 1) {
-				same[i] = ore_data[i] == stone_data[i];
-				new_data[i] = ore_data[i];
-			}
+            int w = ore_image[0].getWidth();
 
-			int dx[] = new int[] { -1, 2, 3 };
-			int dy[] = new int[] { -1, 0, 1 };
+            // create an output image that we will use to override
+            type = ore_image[0].getType();
+            output_image = new BufferedImage(w, w, type);
 
-			// where the magic happens
+            if (w != stone_image.getWidth()) {
+                return true;
+            }
 
-			for (int i = 0; i < ore_data.length; i += 1) {
-				int x = (i % w);
-				int y = (i - x) / w;
+            int[] ore_data = new int[w * w];
+            int[] stone_data = new int[w * w];
+            int[] new_data = new int[w * w];
 
-				// if a pixel is part of the stone texture it should change if
-				// possible
-				boolean shouldChange = same[i];
+            // read the rgb color data into our array
+            ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
+            stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
 
-				// compare the pixel to its shifted counterparts and change it
-				// if the rotated pixel
-				// is 'different' from the stone texture and is either brighter
-				// or the original pixel
-				// was marked as 'shouldChange'.
+            int h = w;
 
-				for (int j = 0; j < dx.length; j++) {
-					if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
-						if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange
-						// || lum(new_data[i]) > lum(ore_data[(x +
-						// dx[j]) + (y +
-						// dy[j]) * w])
-								)) {
-							shouldChange = false;
-							new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
-						}
-				}
+            // check to see which pixels are different
 
-			}
+            boolean[] same = new boolean[w * w];
+            for (int i = 0; i < ore_data.length; i += 1) {
+                same[i] = ore_data[i] == stone_data[i];
+                new_data[i] = ore_data[i];
+            }
 
-			// write the new image data to the output image buffer
-			output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
+            int dx[] = new int[]{-1, 2, 3};
+            int dy[] = new int[]{-1, 0, 1};
 
-			// replace the old texture
-			ore_image[0] = output_image;
+            // where the magic happens
 
-			// load the texture (note the null is where animation data would
-			// normally go)
+            for (int i = 0; i < ore_data.length; i += 1) {
+                int x = (i % w);
+                int y = (i - x) / w;
 
-			this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return true;
-		}
+                // if a pixel is part of the stone texture it should change if
+                // possible
+                boolean shouldChange = same[i];
 
-		System.out.println("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
-		return false;
-	}
+                // compare the pixel to its shifted counterparts and change it
+                // if the rotated pixel
+                // is 'different' from the stone texture and is either brighter
+                // or the original pixel
+                // was marked as 'shouldChange'.
 
-	// get the lighter of two colors
-	public int lighten(int col_a, int col_b) {
-		// get rgb values from color
-		// note that you need to use -col as the color format is always negative
+                for (int j = 0; j < dx.length; j++) {
+                    if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
+                        if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange
+                                // || lum(new_data[i]) > lum(ore_data[(x +
+                                // dx[j]) + (y +
+                                // dy[j]) * w])
+                        )) {
+                            shouldChange = false;
+                            new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
+                        }
+                }
 
-		int r = Math.min(((-col_a) >> 16 & 255), ((-col_b) >> 16 & 255));
-		int g = Math.min(((-col_a) >> 8 & 255), ((-col_b) >> 8 & 255));
-		int b = Math.min(((-col_a) & 255), ((-col_b) & 255));
+            }
 
-		return -(r << 16 | g << 8 | b);
-	}
+            // write the new image data to the output image buffer
+            output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
 
-	// get luminance from color
-	public float lum(int col) {
-		// get rgb values from color
-		// note that you need to use -col as the color format is always negative
-		float r = (float) ((-col) >> 16 & 255) / 255.0F;
-		float g = (float) ((-col) >> 8 & 255) / 255.0F;
-		float b = (float) ((-col) & 255) / 255.0F;
-		r = 1 - r;
-		g = 1 - g;
-		b = 1 - b;
+            // replace the old texture
+            ore_image[0] = output_image;
 
-		// combine the colors the get overall luminance
-		// fun science fact: the human eye is more sensitive to different colors
-		// so its not a simple average
-		return r * 0.2126F + g * 0.7152F + b * 0.0722F;
-	}
+            // load the texture (note the null is where animation data would
+            // normally go)
+
+            this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true;
+        }
+
+        LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
+        return false;
+    }
+
+    // get the lighter of two colors
+    public int lighten(int col_a, int col_b) {
+        // get rgb values from color
+        // note that you need to use -col as the color format is always negative
+
+        int r = Math.min(((-col_a) >> 16 & 255), ((-col_b) >> 16 & 255));
+        int g = Math.min(((-col_a) >> 8 & 255), ((-col_b) >> 8 & 255));
+        int b = Math.min(((-col_a) & 255), ((-col_b) & 255));
+
+        return -(r << 16 | g << 8 | b);
+    }
+
+    // get luminance from color
+    public float lum(int col) {
+        // get rgb values from color
+        // note that you need to use -col as the color format is always negative
+        float r = (float) ((-col) >> 16 & 255) / 255.0F;
+        float g = (float) ((-col) >> 8 & 255) / 255.0F;
+        float b = (float) ((-col) & 255) / 255.0F;
+        r = 1 - r;
+        g = 1 - g;
+        b = 1 - b;
+
+        // combine the colors the get overall luminance
+        // fun science fact: the human eye is more sensitive to different colors
+        // so its not a simple average
+        return r * 0.2126F + g * 0.7152F + b * 0.0722F;
+    }
 }

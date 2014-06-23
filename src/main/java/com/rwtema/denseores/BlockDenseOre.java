@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -15,7 +16,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
@@ -82,6 +85,9 @@ public class BlockDenseOre extends BlockOre {
         if (!init)
             init();
 
+        if (id < 0 || id >= 16)
+            return false;
+
         return valid[id];
     }
 
@@ -109,8 +115,50 @@ public class BlockDenseOre extends BlockOre {
     @SideOnly(Side.CLIENT)
     @Override
     public IIcon getIcon(int side, int meta) {
-        return icons[meta];
+        if (isValid(meta))
+            return icons[meta];
+        else {
+            return getNullOverride(Minecraft.getMinecraft().theWorld).getIcon(0, 0);
+        }
+    }
 
+    // get icon from side/metadata
+    @SideOnly(Side.CLIENT)
+    @Override
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+        int meta = world.getBlockMetadata(x, y, z);
+        if (isValid(meta))
+            return icons[meta];
+        else {
+            return getNullOverride(Minecraft.getMinecraft().theWorld, x, z).getIcon(0, 0);
+        }
+    }
+
+    public Block getNullOverride(World world, int x, int z) {
+        if (world == null)
+            return Blocks.stone;
+
+        BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+        if (biome == BiomeGenBase.hell)
+            return Blocks.netherrack;
+
+        if (biome == BiomeGenBase.sky)
+            return Blocks.end_stone;
+
+        return getNullOverride(world);
+    }
+
+    public Block getNullOverride(World world) {
+        if (world.provider == null)
+            return Blocks.stone;
+
+        if (world.provider.dimensionId == -1)
+            return Blocks.netherrack;
+
+        if (world.provider.dimensionId == 1)
+            return Blocks.end_stone;
+
+        return Blocks.stone;
     }
 
     // register icons
@@ -169,6 +217,8 @@ public class BlockDenseOre extends BlockOre {
                     }
                 }
             }
+        } else {
+            return getNullOverride(world, x, z).getDrops(world, x, y, z, 0, fortune);
         }
         return ret;
     }
@@ -196,9 +246,7 @@ public class BlockDenseOre extends BlockOre {
                         );
 
                 e.printStackTrace();
-                world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just
-                // in
-                // case
+                world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just in case
                 RuntimeException err = new RuntimeException(e);
 
                 throw err;
@@ -206,6 +254,7 @@ public class BlockDenseOre extends BlockOre {
 
             // set it back
             world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
+
             return t;
         }
         return this.blockHardness;

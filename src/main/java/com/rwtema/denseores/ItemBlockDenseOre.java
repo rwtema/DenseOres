@@ -1,9 +1,12 @@
 package com.rwtema.denseores;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 public class ItemBlockDenseOre extends ItemBlock {
     BlockDenseOre oreBlock;
@@ -29,7 +32,18 @@ public class ItemBlockDenseOre extends ItemBlock {
             ItemStack temp = new ItemStack(oreBlock.getBlock(m), 1, oreBlock.entry[m].metadata);
 
             String p = ("" + StatCollector.translateToLocal("denseores.prefix")).trim();
-            return p.replaceFirst("ORENAME",temp.getDisplayName());
+            return p.replaceFirst("ORENAME", temp.getDisplayName());
         }
+    }
+
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return !oreBlock.isValid(stack.getItemDamage());
+    }
+
+    @Override
+    public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+        return new EntityItem(world, location.posX, location.posY, location.posZ,
+                new ItemStack(oreBlock.getNullOverride(world, (int) location.posX, (int) location.posZ), itemstack.stackSize));
     }
 }

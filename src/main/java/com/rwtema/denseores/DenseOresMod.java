@@ -2,8 +2,10 @@ package com.rwtema.denseores;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
@@ -14,20 +16,29 @@ public class DenseOresMod {
     public static final String MODID = "denseores";
     public static final String VERSION = "1.0";
 
+    @SidedProxy(serverSide = "com.rwtema.denseores.Proxy", clientSide = "com.rwtema.denseores.ProxyClient")
+    public static Proxy proxy;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        LogHelper.info("Ph'nglui mglw'nafh, y'uln Dense Ores shugg ch'agl");
         DenseOresConfig.instance.loadConfig(event.getSuggestedConfigurationFile());
+        DenseOresRegistry.buildBlocks();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        DenseOresRegistry.buildBlocks();
-
         DenseOresRegistry.buildOreDictionary();
 
         WorldGenOres worldGen = new WorldGenOres();
         GameRegistry.registerWorldGenerator(worldGen, 1000);
         MinecraftForge.EVENT_BUS.register(worldGen);
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit();
+        LogHelper.info("Dense Ores is fully loaded but sadly it cannot tell you the unlocalized name for dirt.");
     }
 
     @EventHandler

@@ -1,1 +1,2 @@
 denseores.prefix=Dense ORENAME
+denseores.command.help=Outputs the current generated textures to the 'denseoretextures' folder.
