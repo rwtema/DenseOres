@@ -1,6 +1,5 @@
 package com.rwtema.denseores;
 
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -65,8 +64,7 @@ public class DenseOresRegistry {
             int meta = ore.id % 16;
             if (blocks.get(bId).isValid(meta)) {
                 Block b = blocks.get(bId).getBlock(meta);
-                int oreid = OreDictionary.getOreID(new ItemStack(b, 1, ore.metadata));
-                if (oreid >= 0) {
+                for (int oreid : OreDictionary.getOreIDs(new ItemStack(b, 1, ore.metadata))) {
                     String k = OreDictionary.getOreName(oreid);
                     if (k.startsWith("ore")) {
                         k = "dense" + k;
