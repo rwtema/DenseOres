@@ -22,14 +22,6 @@ DenseOres.iml
 DenseOres.ipr
 DenseOres.iws
 forge-1.7.2-10.12.1.1065-changelog.txt
-out/production/DenseOres/assets/denseores/lang/en_US.lang
-out/production/DenseOres/com/rwtema/denseores/BlockDenseOre.class
-out/production/DenseOres/com/rwtema/denseores/DenseOre.class
-out/production/DenseOres/com/rwtema/denseores/DenseOresConfig.class
-out/production/DenseOres/com/rwtema/denseores/DenseOresMod.class
-out/production/DenseOres/com/rwtema/denseores/DenseOresRegistry.class
-out/production/DenseOres/com/rwtema/denseores/ItemBlockDenseOre.class
-out/production/DenseOres/com/rwtema/denseores/TextureOre.class
-out/production/DenseOres/com/rwtema/denseores/WorldGenOres.class
+out/*
 out/production/DenseOres/mcmod.info
 forge-*-changelog.txt
