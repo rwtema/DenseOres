@@ -1,5 +1,6 @@
 package com.rwtema.denseores;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -47,8 +48,19 @@ public class DenseOresRegistry {
 
     public static void registerOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId) {
 
-        if (baseBlock == "" || baseBlock == "minecraft:air")
+        if ("".equals(baseBlock) || "minecraft:air".equals(baseBlock))
             return;
+
+
+        int ind = baseBlock.indexOf(58);
+
+        if (ind > 1) {
+            String modname = baseBlock.substring(0, ind);
+            if (!"minecraft".equals(modname) && !Loader.isModLoaded(modname))
+                return;
+        } else {
+            throw new RuntimeException("Block " + id + " is not formatted correctly. Must be in the form mod:block");
+        }
 
         ores.put(id, new DenseOre(id, baseBlock, metadata, prob, underlyingBlock, texture, retroGenId));
     }
