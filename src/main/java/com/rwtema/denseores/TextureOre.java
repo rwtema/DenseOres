@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 // Custom texture class to handle the ore generation
 public class TextureOre extends TextureAtlasSprite {
@@ -127,7 +128,23 @@ public class TextureOre extends TextureAtlasSprite {
             // load the stone texture
             BufferedImage stone_image = ImageIO.read(iresourceBase.getInputStream());
 
+
             int w = ore_image[0].getWidth();
+
+            if (stone_image.getWidth() != w) {
+                List resourcePacks = manager.getAllResources(getBlockResource(base));
+                for (int i = resourcePacks.size() - 1; i >= 0; --i) {
+                    IResource resource = (IResource) resourcePacks.get(i);
+                    stone_image = ImageIO.read(resource.getInputStream());
+
+                    if (stone_image.getWidth() == w)
+                        break;
+                }
+            }
+
+            if (stone_image.getWidth() != w) {
+                throw new RuntimeException("Error generating texture. Unable to find base texture with same size.");
+            }
 
             // create an output image that we will use to override
             type = ore_image[0].getType();
@@ -145,13 +162,19 @@ public class TextureOre extends TextureAtlasSprite {
             ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
             stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
 
-            int h = w;
-
             // check to see which pixels are different
 
             boolean[] same = new boolean[w * w];
             for (int i = 0; i < ore_data.length; i += 1) {
-                same[i] = ore_data[i] == stone_data[i];
+                if (ore_data[i] == stone_data[i])
+                    same[i] = true;
+                else {
+                    int r = Math.abs(((ore_data[i] & 0xff0000) >> 16) - ((stone_data[i] & 0xff0000) >> 16));
+                    int g = Math.abs(((ore_data[i] & 0x00ff00) >> 8) - ((stone_data[i] & 0x00ff00) >> 8));
+                    int b = Math.abs((ore_data[i] & 0x0000ff) - (stone_data[i] & 0x0000ff));
+
+                    same[i] = (r + g + b) < 20;
+                }
                 new_data[i] = ore_data[i];
             }
 
@@ -176,11 +199,7 @@ public class TextureOre extends TextureAtlasSprite {
 
                 for (int j = 0; j < dx.length; j++) {
                     if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
-                        if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange
-                                // || lum(new_data[i]) > lum(ore_data[(x +
-                                // dx[j]) + (y +
-                                // dy[j]) * w])
-                        )) {
+                        if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange)) {
                             shouldChange = false;
                             new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
                         }
