@@ -46,8 +46,7 @@ public class DenseOresMod {
         for (FMLMissingMappingsEvent.MissingMapping map : event.getAll()) {
             // check the missing mapping for any of the incorrect names
             if (map.name.startsWith("specialores:") // original mod id
-                    || map.name.startsWith("denseores:")    // correct mod name but name may be duplicated
-                    || map.name.startsWith("testificatedenseores:"))    // fake incorrect mapping for test purposes
+                    || map.name.startsWith("denseores:"))    // correct mod name but name may be duplicated
             {
                 // retrieve the block's number from the end of the string
                 int k = -1;

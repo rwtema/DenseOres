@@ -24,11 +24,7 @@ import org.apache.logging.log4j.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-/*  Mostly the same from 1.6.,
- *  couple of names have changed but everything works the
- *  same as before
- * 
- * I'm using the 16 metadata values to store each ore block.
+/*  I'm using the 16 metadata values to store each ore block.
  *  (We don't really need to worry about block ids in 1.7
  *   but that's no reason to be wasteful)
  */

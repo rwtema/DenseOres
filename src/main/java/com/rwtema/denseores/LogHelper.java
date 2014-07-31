@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LogHelper {
-    public static Logger logger = LogManager.getLogger("extrautils");
+    public static Logger logger = LogManager.getLogger("denseores");
 
     public static boolean isDeObf = false;
 
