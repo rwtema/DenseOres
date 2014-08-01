@@ -79,7 +79,9 @@ public class DenseOresRegistry {
                 for (int oreid : OreDictionary.getOreIDs(new ItemStack(b, 1, ore.metadata))) {
                     String k = OreDictionary.getOreName(oreid);
                     if (k.startsWith("ore")) {
+                        ore.baseOreDictionary = k;
                         k = "dense" + k;
+                        ore.oreDictionary = k;
                         OreDictionary.registerOre(k, new ItemStack(blocks.get(bId), 1, meta));
                     }
                 }

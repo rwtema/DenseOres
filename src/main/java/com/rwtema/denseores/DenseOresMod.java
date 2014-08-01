@@ -29,6 +29,7 @@ public class DenseOresMod {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         DenseOresRegistry.buildOreDictionary();
+        ModIntegration.addModIntegration();
 
         WorldGenOres worldGen = new WorldGenOres();
         GameRegistry.registerWorldGenerator(worldGen, 1000);

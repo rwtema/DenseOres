@@ -2,6 +2,7 @@ package com.rwtema.denseores;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 
 /*
  * Dense ore entry
@@ -9,13 +10,16 @@ import net.minecraft.item.ItemStack;
  * holds data for when we need it
  */
 public class DenseOre {
-    String baseBlock;
-    int metadata;
-    double prob;
-    String underlyingBlock;
-    String texture;
-    int id;
-    int retroGenId;
+    public String baseBlock;
+    public String modOwner;
+    public int metadata;
+    public double prob;
+    public String underlyingBlock;
+    public String texture;
+    public int id;
+    public int retroGenId;
+    public String baseOreDictionary = "";
+    public String oreDictionary = "";
 
     public DenseOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId) {
         this.id = id;
@@ -25,6 +29,7 @@ public class DenseOre {
         this.underlyingBlock = underlyingBlock;
         this.texture = texture;
         this.retroGenId = retroGenId;
+        this.modOwner = baseBlock.substring(0, baseBlock.indexOf(58));
     }
 
     public BlockDenseOre getBlock() {
@@ -47,4 +52,26 @@ public class DenseOre {
         return new ItemStack(getBaseBlock(), stacksize, metadata);
     }
 
+
+    private ItemStack smelt;
+    boolean initSmelt = false;
+
+
+    public ItemStack getSmeltingRecipe() {
+        if (initSmelt)
+            return smelt;
+
+        initSmelt = true;
+        ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
+
+        if (out != null) {
+            out = out.copy();
+            out.stackSize = (int) (out.stackSize * 3);
+            if (out.stackSize > 64)
+                out.stackSize = 64;
+            else if (out.stackSize < 1)
+                out.stackSize = 1;
+        }
+        return out;
+    }
 }
