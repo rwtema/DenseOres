@@ -12,16 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.Random;
 
 public class ModIntegration {
-    public static final String[] canonOres = {
-            "oreIron",
-            "oreGold",
-            "oreCopper",
-            "oreTin",
-            "oreSilver",
-            "oreLead",
-            "oreNickel",
-            "orePlatinum"
-    };
+    public static final String[] canonOres = {"oreIron", "oreGold", "oreCopper", "oreTin", "oreSilver", "oreLead", "oreNickel", "orePlatinum"};
 
     public static boolean isCanonOre(String ore) {
         for (String s : canonOres)
@@ -29,6 +20,15 @@ public class ModIntegration {
                 return true;
         return false;
     }
+
+    public static String getSecondCanonOre(String ore) {
+        for (int i = 0; i < canonOres.length; i++)
+            if (canonOres[i].equals(ore))
+                return canonSecondaryOres[i];
+        return null;
+    }
+
+    public static final String[] canonSecondaryOres = {"oreNickel", null, "oreGold", "oreIron", "oreLead", "oreSilver", "orePlatinum", null};
 
     public static interface ModInterface {
         public void registerOre(DenseOre ore, ItemStack input, ItemStack output);
@@ -125,10 +125,13 @@ public class ModIntegration {
 
             if (isCanonOre(ore.baseOreDictionary)) {
                 ItemStack slag = GameRegistry.findItemStack("ThermalExpansion", "slagRich", 1);
+                String s = getSecondCanonOre(ore.baseOreDictionary);
+                if (s != null)
+                    slag = cloneStack(getSmeltedIngot(s, ore.modOwner), 3);
 
                 addSmelter(input, new ItemStack(Blocks.sand, 4), getFurnace(ore, 8.0F), slag, 25);
                 addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "dustPyrotheum", 2), getFurnace(ore, 8.0F), slag, 75);
-                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "crystalCinnabar", 1), getFurnace(ore, 12.0F), slag, 100);
+                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "crystalCinnabar", 2), getFurnace(ore, 16.0F), slag, 100);
             }
         }
 
