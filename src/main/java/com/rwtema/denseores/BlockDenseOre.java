@@ -251,19 +251,12 @@ public class BlockDenseOre extends BlockOre {
                 t = base.getBlockHardness(world, x, y, z);
             } catch (Exception e) {
                 // oh oh, it seems it didn't like having a different block id.
-                FMLCommonHandler
-                        .instance()
-                        .getFMLLogger()
-                        .log(Level.ERROR,
-                                "The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
-                                        + " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores"
-                        );
+                LogHelper.error("The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
+                        + " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores", e);
 
-                e.printStackTrace();
-                world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0); // just in case
-                RuntimeException err = new RuntimeException(e);
+                world.setBlockMetadataWithNotify(x, y, z, getMetadata(metadata), 0); // just in case
 
-                throw err;
+                throw new RuntimeException(e);
             }
 
             // set it back
