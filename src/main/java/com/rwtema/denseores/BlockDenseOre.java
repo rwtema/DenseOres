@@ -19,10 +19,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /*  I'm using the 16 metadata values to store each ore block.
  *  (We don't really need to worry about block ids in 1.7
@@ -219,7 +219,7 @@ public class BlockDenseOre extends BlockOre {
             if (base == null)
                 return ret;
 
-            int m = entry[metadata].metadata;
+            int m = getMetadata(metadata);
 
             // get base drops 3 times
             for (int j = 0; j < 3; j++) {
@@ -237,6 +237,10 @@ public class BlockDenseOre extends BlockOre {
         return ret;
     }
 
+    private int getMetadata(int id) {
+        return entry[id].metadata;
+    }
+
     // get hardness
     @Override
     public float getBlockHardness(World world, int x, int y, int z) {
@@ -246,7 +250,7 @@ public class BlockDenseOre extends BlockOre {
             float t = this.blockHardness;
 
             // quickly change metadata to match what is expected
-            world.setBlockMetadataWithNotify(x, y, z, entry[metadata].metadata, 0);
+            world.setBlockMetadataWithNotify(x, y, z, getMetadata(metadata), 0);
             try {
                 t = base.getBlockHardness(world, x, y, z);
             } catch (Exception e) {
