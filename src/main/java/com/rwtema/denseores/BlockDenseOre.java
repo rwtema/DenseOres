@@ -77,6 +77,24 @@ public class BlockDenseOre extends BlockOre {
         return baseBlocks[id];
     }
 
+    @Override
+    public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
+        int id = world.getBlockMetadata(x, y, z);
+        if (!isValid(id))
+            return;
+
+        try {
+            world.setBlock(x, y, z, getBlock(id), getMetadata(id), 0);
+            for (int i = 0; i < 1 + rand.nextInt(3); i++)
+                getBlock(id).randomDisplayTick(world, x, y, z, rand);
+        } catch (Exception e) {
+            world.setBlock(x, y, z, this, id, 0);
+            throw new RuntimeException(e);
+        }
+
+        world.setBlock(x, y, z, this, id, 0);
+    }
+
     public boolean isValid(int id) {
         if (!init)
             init();
