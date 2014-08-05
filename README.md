@@ -8,6 +8,12 @@ Code is provided without guarantee of being error-free or optimal.
 
 Download of the latest release:<a href="http://www.mediafire.com/download/ac7a4hb8cuzm6rb/denseores-1.4.jar">Dense Ores 1.4</a>
 
+
+If you wish to add another mods ores to the game, you will need to alter the config file. I generally wouldn't recommend doing this if you are a casual player since this can cause issues. It's best to see if there is a modpack that does it properly for you. There is a simple denseores.cfg that includes a number of ores from some common mods here <a href="https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg">https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg</a><br>
+
+You can also find individual example configs for common mods at <a href="https://github.com/rwtema/DenseOres/tree/master/example_configs/mods">https://github.com/rwtema/DenseOres/tree/master/example_configs/mods</a>. This will require you to change the ore ids when you add them to your config file. If anyone wishes to add more example configs for common mods, then please feel free to submit a pull request for it.<br>
+
+
 Older Versions:<br>
 <a href="http://www.mediafire.com/download/vcluluqcd8k0atp/denseores-1.3.jar">Dense Ores 1.3</a><br>
 There was no 1.2 version for some reason.<br>
@@ -16,4 +22,3 @@ There was no 1.2 version for some reason.<br>
 
 
 
-There is an example of a config file which adds dense ore variants of IC2, Tinker's Construct and Thermal Expansion ores in the example folder.
