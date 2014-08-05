@@ -36,4 +36,12 @@ public class LogHelper {
 
         logger.info(info);
     }
+
+    public static void error(String message, Throwable t) {
+        logger.error(message, t);
+    }
+
+    public static void error(String s) {
+        logger.error(s);
+    }
 }
