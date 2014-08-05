@@ -4,6 +4,8 @@ import cpw.mods.fml.common.Loader;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 // Load the config file
 public class DenseOresConfig {
@@ -31,6 +33,7 @@ public class DenseOresConfig {
             config.get(cat, "denseOreProbability", ore.prob);
             config.get(cat, "underlyingBlock", ore.underlyingBlock);
             config.get(cat, "retroGenId", 0);
+            config.get(cat, "renderType", ore.rendertype);
         }
 
         // go through all categories and add them to the registry if they match
@@ -46,13 +49,21 @@ public class DenseOresConfig {
 
                     // register the block
                     if (!DenseOresRegistry.hasEntry(id) && config.hasKey(cat, "baseBlock") && config.hasKey(cat, "baseBlockTexture")) {
-                        DenseOresRegistry.registerOre(id, config.get(cat, "baseBlock", "").getString(), config.get(cat, "baseBlockMeta", 0).getInt(0), config.get(cat, "denseOreProbability", 1)
-                                .getDouble(1), config.get(cat, "underlyingBlock", "stone").getString(), config.get(cat, "baseBlockTexture", "").getString(), config.get(cat, "retroGenID", 0).getInt());
+                        String[] overlays = null;
+                        if (config.hasKey(cat, "baseBlockTextureOverlay_0")) {
+                            List<String> overlayList = new ArrayList<String>();
+                            for (int i = 0; config.hasKey(cat, "baseBlockTextureOverlay_" + i); i++) {
+                                overlayList.add(config.get(cat, "baseBlockTextureOverlay_" + i, "").getString());
+                            }
+                            overlays = overlayList.toArray(new String[overlayList.size()]);
+                        }
+
+                        DenseOresRegistry.registerOre(id, config.get(cat, "baseBlock", "").getString().trim(), config.get(cat, "baseBlockMeta", 0).getInt(0), config.get(cat, "denseOreProbability", 1)
+                                .getDouble(1), config.get(cat, "underlyingBlock", "stone").getString().trim(), config.get(cat, "baseBlockTexture", "").getString().trim(), config.get(cat, "retroGenID", 0).getInt(), overlays, config.get(cat, "renderType", 0).getInt(0));
 
                     }
                 } catch (NumberFormatException e) { // text after ore.block_ was
                     // not an integer
-
                 }
             }
         }

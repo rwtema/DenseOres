@@ -25,6 +25,7 @@ public class TextureOre extends TextureAtlasSprite {
 
     public BufferedImage output_image = null;
 
+
     public static String getDerivedName(String s2) {
         String s1 = "minecraft";
 
@@ -41,6 +42,13 @@ public class TextureOre extends TextureAtlasSprite {
         s1 = s1.toLowerCase();
 
         return DenseOresMod.MODID + ":" + s1 + "/" + s2;
+    }
+
+    private int renderType = 0;
+
+    public TextureOre(DenseOre denseOre) {
+        this(denseOre.texture, denseOre.underlyingBlock);
+        renderType = denseOre.rendertype;
     }
 
     public TextureOre(String par1Str, String base) {
@@ -109,6 +117,9 @@ public class TextureOre extends TextureAtlasSprite {
 
         // get mipmapping level
         int mp = Minecraft.getMinecraft().gameSettings.mipmapLevels;
+        BufferedImage[] ore_image;
+        BufferedImage stone_image;
+        int w;
 
         try {
             IResource iresource = manager.getResource(getBlockResource(name));
@@ -120,16 +131,16 @@ public class TextureOre extends TextureAtlasSprite {
             // far-away
             // see: http://en.wikipedia.org/wiki/Mipmap)
             // these will be generated from the base texture
-            BufferedImage[] ore_image = new BufferedImage[1 + mp];
+            ore_image = new BufferedImage[1 + mp];
 
             // load the ore texture
             ore_image[0] = ImageIO.read(iresource.getInputStream());
 
             // load the stone texture
-            BufferedImage stone_image = ImageIO.read(iresourceBase.getInputStream());
+            stone_image = ImageIO.read(iresourceBase.getInputStream());
 
 
-            int w = ore_image[0].getWidth();
+            w = ore_image[0].getWidth();
 
             if (stone_image.getWidth() != w) {
                 List resourcePacks = manager.getAllResources(getBlockResource(base));
@@ -141,117 +152,149 @@ public class TextureOre extends TextureAtlasSprite {
                         break;
                 }
             }
-
-            if (stone_image.getWidth() != w) {
-                throw new RuntimeException("Error generating texture. Unable to find base texture with same size.");
-            }
-
-            // create an output image that we will use to override
-            type = ore_image[0].getType();
-            output_image = new BufferedImage(w, w, type);
-
-            if (w != stone_image.getWidth()) {
-                return true;
-            }
-
-            int[] ore_data = new int[w * w];
-            int[] stone_data = new int[w * w];
-            int[] new_data = new int[w * w];
-
-            // read the rgb color data into our array
-            ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
-            stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
-
-            // check to see which pixels are different
-
-            boolean[] same = new boolean[w * w];
-            for (int i = 0; i < ore_data.length; i += 1) {
-                if (ore_data[i] == stone_data[i])
-                    same[i] = true;
-                else {
-                    int r = Math.abs(((ore_data[i] & 0xff0000) >> 16) - ((stone_data[i] & 0xff0000) >> 16));
-                    int g = Math.abs(((ore_data[i] & 0x00ff00) >> 8) - ((stone_data[i] & 0x00ff00) >> 8));
-                    int b = Math.abs((ore_data[i] & 0x0000ff) - (stone_data[i] & 0x0000ff));
-
-                    same[i] = (r + g + b) < 20;
-                }
-                new_data[i] = ore_data[i];
-            }
-
-            int dx[] = new int[]{-1, 2, 3};
-            int dy[] = new int[]{-1, 0, 1};
-
-            // where the magic happens
-
-            for (int i = 0; i < ore_data.length; i += 1) {
-                int x = (i % w);
-                int y = (i - x) / w;
-
-                // if a pixel is part of the stone texture it should change if
-                // possible
-                boolean shouldChange = same[i];
-
-                // compare the pixel to its shifted counterparts and change it
-                // if the rotated pixel
-                // is 'different' from the stone texture and is either brighter
-                // or the original pixel
-                // was marked as 'shouldChange'.
-
-                for (int j = 0; j < dx.length; j++) {
-                    if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
-                        if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange)) {
-                            shouldChange = false;
-                            new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
-                        }
-                }
-
-            }
-
-            // write the new image data to the output image buffer
-            output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
-
-            // replace the old texture
-            ore_image[0] = output_image;
-
-            // load the texture (note the null is where animation data would
-            // normally go)
-
-            this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
         } catch (IOException e) {
             e.printStackTrace();
             return true;
         }
 
+        if (stone_image.getWidth() != w) {
+            throw new RuntimeException("Error generating texture. Unable to find base texture with same size.");
+        }
+
+        // create an output image that we will use to override
+        output_image = new BufferedImage(w, w, 2);
+
+        if (w != stone_image.getWidth()) {
+            return true;
+        }
+
+        int[] ore_data = new int[w * w];
+        int[] stone_data = new int[w * w];
+
+
+        // read the rgb color data into our array
+        ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
+        stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
+
+        int[] new_data = createDenseTexture(w, ore_data, stone_data, renderType);
+
+        // write the new image data to the output image buffer
+        output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
+
+        // replace the old texture
+        ore_image[0] = output_image;
+
+        // load the texture (note the null is where animation data would
+        // normally go)
+
+        this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
+
         LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
         return false;
     }
 
-    // get the lighter of two colors
-    public int lighten(int col_a, int col_b) {
-        // get rgb values from color
-        // note that you need to use -col as the color format is always negative
+    private static int[] createDenseTexture(int w, int[] ore_data, int[] stone_data, int renderType) {
+        // check to see which pixels are different
+        int[] new_data = new int[w * w];
+        boolean[] same = new boolean[w * w];
+        for (int i = 0; i < ore_data.length; i += 1) {
+            if (getAlpha(ore_data[i]) == 0) {
+                same[i] = true;
+                ore_data[i] = stone_data[i];
+            } else if (ore_data[i] == stone_data[i]) {
+                same[i] = true;
+            } else {
 
-        int r = Math.min(((-col_a) >> 16 & 255), ((-col_b) >> 16 & 255));
-        int g = Math.min(((-col_a) >> 8 & 255), ((-col_b) >> 8 & 255));
-        int b = Math.min(((-col_a) & 255), ((-col_b) & 255));
+                int r = Math.abs(getRed(ore_data[i]) - getRed(stone_data[i]));
+                int g = Math.abs(getGreen(ore_data[i]) - getGreen(stone_data[i]));
+                int b = Math.abs(getBlue(ore_data[i]) - getBlue(stone_data[i]));
 
-        return -(r << 16 | g << 8 | b);
+                same[i] = (r + g + b) < 20;
+            }
+            new_data[i] = ore_data[i];
+        }
+
+        int[] dx;
+        int[] dy;
+
+        //allows for different convolutions
+        switch (renderType) {
+            default:
+            case 0:
+                dx = new int[]{-1, 2, 3};
+                dy = new int[]{-1, 0, 1};
+                break;
+            case 1:
+                dx = new int[]{-1, 1, 0, 0, -1, -1, 1, 1, -2, 2, 0, 0};
+                dy = new int[]{0, 0, -1, 1, -1, 1, -1, 1, 0, 0, -2, 2};
+                break;
+            case 2:
+                dx = new int[]{-1, 0, 1};
+                dy = new int[]{-1, 0, 1};
+                break;
+            case 3:
+                dx = new int[]{-2, 2, 1, 1};
+                dy = new int[]{1, 1, -2, 2};
+            case 4:
+                dx = new int[]{-6, -3, 3, 6};
+                dy = new int[]{0, 0, 0, 0};
+                break;
+            case 5:
+                dx = new int[]{-5, -5, 5, 5};
+                dy = new int[]{-5, 5, -5, 5};
+                break;
+            case 6:
+                dx = new int[]{0, 1, 2, 3};
+                dy = new int[]{0, -3, 2, -1};
+                break;
+            case 7:
+                dx = new int[]{-1, 1, 0, 0};
+                dy = new int[]{0, 0, -1, 1};
+                break;
+        }
+
+
+        // where the magic happens
+
+        for (int i = 0; i < ore_data.length; i += 1) {
+            int x = (i % w);
+            int y = (i - x) / w;
+
+            // if a pixel is part of the stone texture it should change if
+            // possible
+            boolean shouldChange = same[i];
+
+            // compare the pixel to its shifted counterparts and change it
+            // if the rotated pixel
+            // is 'different' from the stone texture and is either brighter
+            // or the original pixel
+            // was marked as 'shouldChange'.
+
+            for (int j = 0; j < dx.length; j++) {
+                if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
+                    if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange)) {
+                        shouldChange = false;
+                        new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
+                    }
+            }
+
+        }
+        return new_data;
     }
 
-    // get luminance from color
-    public float lum(int col) {
-        // get rgb values from color
-        // note that you need to use -col as the color format is always negative
-        float r = (float) ((-col) >> 16 & 255) / 255.0F;
-        float g = (float) ((-col) >> 8 & 255) / 255.0F;
-        float b = (float) ((-col) & 255) / 255.0F;
-        r = 1 - r;
-        g = 1 - g;
-        b = 1 - b;
+    public static int getAlpha(int col) {
+        return (col & 0xff000000) >> 24;
+    }
 
-        // combine the colors the get overall luminance
-        // fun science fact: the human eye is more sensitive to different colors
-        // so its not a simple average
-        return r * 0.2126F + g * 0.7152F + b * 0.0722F;
+    public static int getRed(int col) {
+        return (col & 0x00ff0000) >> 16;
+    }
+
+    public static int getGreen(int col) {
+        return (col & 0x0000ff00) >> 8;
+    }
+
+    public static int getBlue(int col) {
+        return col & 0x000000ff;
     }
 }

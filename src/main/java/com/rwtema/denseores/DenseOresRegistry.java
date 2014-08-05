@@ -17,14 +17,14 @@ public class DenseOresRegistry {
 
     // add vanilla entries (TODO: add a way to disable vanilla ores)
     public static void initVanillaOres() {
-        registerOre(0, "minecraft:iron_ore", 0, 1, "stone", "iron_ore", 0);
-        registerOre(1, "minecraft:gold_ore", 0, 1, "stone", "gold_ore", 0);
-        registerOre(2, "minecraft:lapis_ore", 0, 1, "stone", "lapis_ore", 0);
-        registerOre(3, "minecraft:diamond_ore", 0, 1, "stone", "diamond_ore", 0);
-        registerOre(4, "minecraft:emerald_ore", 0, 1, "stone", "emerald_ore", 0);
-        registerOre(5, "minecraft:redstone_ore", 0, 1, "stone", "redstone_ore", 0);
-        registerOre(6, "minecraft:coal_ore", 0, 1, "stone", "coal_ore", 0);
-        registerOre(7, "minecraft:quartz_ore", 0, 1, "netherrack", "quartz_ore", 0);
+        registerOre(0, "minecraft:iron_ore", 0, 1, "stone", "iron_ore", 0, null, 0);
+        registerOre(1, "minecraft:gold_ore", 0, 1, "stone", "gold_ore", 0, null, 0);
+        registerOre(2, "minecraft:lapis_ore", 0, 1, "stone", "lapis_ore", 0, null, 0);
+        registerOre(3, "minecraft:diamond_ore", 0, 1, "stone", "diamond_ore", 0, null, 0);
+        registerOre(4, "minecraft:emerald_ore", 0, 1, "stone", "emerald_ore", 0, null, 0);
+        registerOre(5, "minecraft:redstone_ore", 0, 1, "stone", "redstone_ore", 0, null, 0);
+        registerOre(6, "minecraft:coal_ore", 0, 1, "stone", "coal_ore", 0, null, 0);
+        registerOre(7, "minecraft:quartz_ore", 0, 1, "netherrack", "quartz_ore", 0, null, 0);
     }
 
     public static String blockPrefix = DenseOresMod.MODID;
@@ -46,7 +46,7 @@ public class DenseOresRegistry {
         }
     }
 
-    public static void registerOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId) {
+    public static void registerOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId, String[] textureOverlays, int renderType) {
 
         if ("".equals(baseBlock) || "minecraft:air".equals(baseBlock))
             return;
@@ -62,7 +62,7 @@ public class DenseOresRegistry {
             throw new RuntimeException("Block " + id + " is not formatted correctly. Must be in the form mod:block");
         }
 
-        ores.put(id, new DenseOre(id, baseBlock, metadata, prob, underlyingBlock, texture, retroGenId));
+        ores.put(id, new DenseOre(id, baseBlock, metadata, prob, underlyingBlock, texture, retroGenId, textureOverlays, renderType));
     }
 
     public static boolean hasEntry(int id) {

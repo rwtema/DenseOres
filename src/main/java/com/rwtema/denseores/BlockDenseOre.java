@@ -1,6 +1,5 @@
 package com.rwtema.denseores;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -193,7 +192,7 @@ public class BlockDenseOre extends BlockOre {
                     TextureAtlasSprite texture = map.getTextureExtry(name);
                     if (texture == null) {
                         // if not create one and put it in the register
-                        texture = new TextureOre(entry[i].texture, entry[i].underlyingBlock);
+                        texture = new TextureOre(entry[i]);
                         map.setTextureEntry(name, texture);
                     }
 

@@ -10,18 +10,20 @@ import net.minecraft.item.crafting.FurnaceRecipes;
  * holds data for when we need it
  */
 public class DenseOre {
+    public int rendertype;
     public String baseBlock;
     public String modOwner;
     public int metadata;
     public double prob;
     public String underlyingBlock;
     public String texture;
+    public String[] textureOverlays;
     public int id;
     public int retroGenId;
     public String baseOreDictionary = "";
     public String oreDictionary = "";
 
-    public DenseOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId) {
+    public DenseOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId, String[] textureOverlays,int renderType) {
         this.id = id;
         this.baseBlock = baseBlock;
         this.metadata = metadata;
@@ -30,6 +32,8 @@ public class DenseOre {
         this.texture = texture;
         this.retroGenId = retroGenId;
         this.modOwner = baseBlock.substring(0, baseBlock.indexOf(58));
+        this.textureOverlays = textureOverlays;
+        this.rendertype = renderType;
     }
 
     public BlockDenseOre getBlock() {
