@@ -50,10 +50,6 @@ public class WorldGenOres implements IWorldGenerator {
     public boolean overrideChunkBlock(Chunk chunk, int x, int y, int z, BlockDenseOre dense_ore_blocks, int id) {
         int i1 = z << 4 | x;
 
-        if (y >= chunk.precipitationHeightMap[i1] - 1) {
-            chunk.precipitationHeightMap[i1] = -999;
-        }
-
         Block block1 = chunk.getBlock(x, y, z);
         int k1 = chunk.getBlockMetadata(x, y, z);
 
@@ -63,7 +59,7 @@ public class WorldGenOres implements IWorldGenerator {
             ExtendedBlockStorage extendedblockstorage = chunk.getBlockStorageArray()[y >> 4];
 
             if (extendedblockstorage == null)
-                return false;   //should never happen as we are replacing a block
+                return false;   //should never happen as we are replacing an existing block
 
             extendedblockstorage.func_150818_a(x, y & 15, z, dense_ore_blocks);
             extendedblockstorage.setExtBlockMetadata(x, y & 15, z, id);
@@ -72,18 +68,12 @@ public class WorldGenOres implements IWorldGenerator {
                 TileEntity te = chunk.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
                 if (te != null) {
                     ChunkPosition chunkposition = new ChunkPosition(x & 0x0F, y, z & 0x0F);
-                    chunk.chunkTileEntityMap.remove(chunkposition);
+                    te = (TileEntity) chunk.chunkTileEntityMap.remove(chunkposition);
                     te.invalidate(); //urk hopefully this doesn't explode anything
                 }
             }
 
-            if (extendedblockstorage.getBlockByExtId(x, y & 15, z) != dense_ore_blocks) {
-                return false;
-            } else {
-                chunk.generateSkylightMap();
-                chunk.isModified = true;
-                return true;
-            }
+            return extendedblockstorage.getBlockByExtId(x, y & 15, z) == dense_ore_blocks;
         }
     }
 
