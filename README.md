@@ -6,7 +6,8 @@ DenseOres by RWTema
 Code is provided without guarantee of being error-free or optimal.
 
 
-Download of the latest release: <a href="http://www.mediafire.com/download/leudza3jpd8uvd8/denseores-1.4.1.jar">Version 1.4.1</a>
+<br>Download of the latest release: <a href="http://www.mediafire.com/download/leudza3jpd8uvd8/denseores-1.4.1.jar">Version 1.4.1</a><br><br>
+
 
 If you wish to add another mods ores to the game, you will need to alter the config file. I generally wouldn't recommend doing this if you are a casual player since this can cause issues. It's best to see if there is a modpack that does it properly for you. There is a simple denseores.cfg that includes a number of ores from some common mods here <a href="https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg">https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg</a><br>
 
