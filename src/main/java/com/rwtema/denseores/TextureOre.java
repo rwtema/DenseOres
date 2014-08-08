@@ -117,7 +117,15 @@ public class TextureOre extends TextureAtlasSprite {
 
         // get mipmapping level
         int mp = Minecraft.getMinecraft().gameSettings.mipmapLevels;
-        BufferedImage[] ore_image;
+
+        // creates a buffer that will be used for our texture and the
+        // various mip-maps
+        // (mip-mapping is where you use smaller textures when objects are
+        // far-away
+        // see: http://en.wikipedia.org/wiki/Mipmap)
+        // these will be generated from the base texture by Minecraft
+        BufferedImage[] ore_image = new BufferedImage[1 + mp];
+
         BufferedImage stone_image;
         int w;
 
@@ -125,20 +133,11 @@ public class TextureOre extends TextureAtlasSprite {
             IResource iresource = manager.getResource(getBlockResource(name));
             IResource iresourceBase = manager.getResource(getBlockResource(base));
 
-            // creates a buffer that will be used for our texture and the
-            // various mip-maps
-            // (mip-mapping is where you use smaller textures when objects are
-            // far-away
-            // see: http://en.wikipedia.org/wiki/Mipmap)
-            // these will be generated from the base texture
-            ore_image = new BufferedImage[1 + mp];
-
             // load the ore texture
             ore_image[0] = ImageIO.read(iresource.getInputStream());
 
             // load the stone texture
             stone_image = ImageIO.read(iresourceBase.getInputStream());
-
 
             w = ore_image[0].getWidth();
 
@@ -161,21 +160,23 @@ public class TextureOre extends TextureAtlasSprite {
             throw new RuntimeException("Error generating texture. Unable to find base texture with same size.");
         }
 
-        // create an output image that we will use to override
+        // create an ARGB output image that will be used as our texture
         output_image = new BufferedImage(w, w, 2);
 
         if (w != stone_image.getWidth()) {
             return true;
         }
 
+        // create some arrays t hold the pixel data
+        // pixel data is in the form 0xaarrggbb
         int[] ore_data = new int[w * w];
         int[] stone_data = new int[w * w];
 
-
-        // read the rgb color data into our array
+        // read the ARGB color data into our arrays
         ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
         stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
 
+        // generate our new texture
         int[] new_data = createDenseTexture(w, ore_data, stone_data, renderType);
 
         // write the new image data to the output image buffer
@@ -185,8 +186,7 @@ public class TextureOre extends TextureAtlasSprite {
         ore_image[0] = output_image;
 
         // load the texture (note the null is where animation data would
-        // normally go)
-
+        // normally go since we don't support animation yet)
         this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
 
         LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
@@ -194,30 +194,31 @@ public class TextureOre extends TextureAtlasSprite {
     }
 
     private static int[] createDenseTexture(int w, int[] ore_data, int[] stone_data, int renderType) {
-        // check to see which pixels are different
         int[] new_data = new int[w * w];
+
+        // we need to work out which pixels should be considered 'ore pixels' and which should be 'base pixels'
         boolean[] same = new boolean[w * w];
         for (int i = 0; i < ore_data.length; i += 1) {
-            if (getAlpha(ore_data[i]) == 0) {
+            if (getAlpha(ore_data[i]) == 0) {   // if the ore texture pixel is transparent, overwrite with the corresponding stone pixel
                 same[i] = true;
                 ore_data[i] = stone_data[i];
             } else if (ore_data[i] == stone_data[i]) {
                 same[i] = true;
             } else {
-
                 int r = Math.abs(getRed(ore_data[i]) - getRed(stone_data[i]));
                 int g = Math.abs(getGreen(ore_data[i]) - getGreen(stone_data[i]));
                 int b = Math.abs(getBlue(ore_data[i]) - getBlue(stone_data[i]));
 
-                same[i] = (r + g + b) < 20;
+                same[i] = (r + g + b) < 20; // check to see if the two pixels are not exactly the same but 'close'
             }
+
             new_data[i] = ore_data[i];
         }
 
         int[] dx;
         int[] dy;
 
-        //allows for different convolutions
+        //allows for different convolution filters
         switch (renderType) {
             default:
             case 0:
@@ -255,29 +256,25 @@ public class TextureOre extends TextureAtlasSprite {
 
 
         // where the magic happens
-
         for (int i = 0; i < ore_data.length; i += 1) {
             int x = (i % w);
             int y = (i - x) / w;
 
-            // if a pixel is part of the stone texture it should change if
-            // possible
-            boolean shouldChange = same[i];
+            // if the pixel an ore pixel, we don't need to do anything so continue
+            if (!same[i])
+                continue;
 
-            // compare the pixel to its shifted counterparts and change it
-            // if the rotated pixel
-            // is 'different' from the stone texture and is either brighter
-            // or the original pixel
-            // was marked as 'shouldChange'.
-
+            // use our convolution filter to see if we can find an ore pixel nearby
             for (int j = 0; j < dx.length; j++) {
-                if ((x + dx[j]) >= 0 && (x + dx[j]) < w && (y + dy[j]) >= 0 && (y + dy[j]) < w)
-                    if (!same[(x + dx[j]) + (y + dy[j]) * w] && (shouldChange)) {
-                        shouldChange = false;
-                        new_data[i] = ore_data[(x + dx[j]) + (y + dy[j]) * w];
+                final int new_x = x + dx[j];
+                final int new_y = y + dy[j];
+
+                if (new_x >= 0 && new_x < w && new_y >= 0 && new_y < w) // is valid pixel location
+                    if (!same[new_x + new_y * w]) { // is it an ore pixel?
+                        new_data[i] = ore_data[new_x + new_y * w];
+                        break;
                     }
             }
-
         }
         return new_data;
     }
@@ -296,5 +293,9 @@ public class TextureOre extends TextureAtlasSprite {
 
     public static int getBlue(int col) {
         return col & 0x000000ff;
+    }
+
+    public static int makeCol(int red, int green, int blue, int alpha) {
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
 }
