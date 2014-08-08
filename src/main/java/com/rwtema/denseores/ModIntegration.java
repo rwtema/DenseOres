@@ -123,10 +123,10 @@ public class ModIntegration {
         public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
             addPulverizer(input, output);
 
-            if (isCanonOre(ore.baseOreDictionary)) {
+            if (isCanonOre(ore.baseOreDictionary) && getFurnace(ore, 1) != null) {
                 ItemStack slag = GameRegistry.findItemStack("ThermalExpansion", "slagRich", 1);
                 String s = getSecondCanonOre(ore.baseOreDictionary);
-                if (s != null)
+                if (s != null && getSmeltedIngot(s, ore.modOwner) != null)
                     slag = cloneStack(getSmeltedIngot(s, ore.modOwner), 3);
 
                 addSmelter(input, new ItemStack(Blocks.sand, 4), getFurnace(ore, 8.0F), slag, 25);
