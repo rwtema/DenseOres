@@ -157,15 +157,12 @@ public class TextureOre extends TextureAtlasSprite {
         }
 
         if (stone_image.getWidth() != w) {
-            throw new RuntimeException("Error generating texture. Unable to find base texture with same size.");
+            LogHelper.error("Error generating texture. Unable to find base texture with same size.");
+            return true;
         }
 
         // create an ARGB output image that will be used as our texture
         output_image = new BufferedImage(w, w, 2);
-
-        if (w != stone_image.getWidth()) {
-            return true;
-        }
 
         // create some arrays t hold the pixel data
         // pixel data is in the form 0xaarrggbb
