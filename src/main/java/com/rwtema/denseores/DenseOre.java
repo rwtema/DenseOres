@@ -76,6 +76,9 @@ public class DenseOre {
             else if (out.stackSize < 1)
                 out.stackSize = 1;
         }
+        
+        smelt = out;
+        
         return out;
     }
 }
