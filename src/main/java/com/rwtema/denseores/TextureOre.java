@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.util.ResourceLocation;
 
 import javax.imageio.ImageIO;
@@ -131,12 +132,17 @@ public class TextureOre extends TextureAtlasSprite {
         BufferedImage stone_image;
         int w;
 
+        AnimationMetadataSection animation;
+
         try {
             IResource iresource = manager.getResource(getBlockResource(name));
             IResource iresourceBase = manager.getResource(getBlockResource(base));
 
             // load the ore texture
             ore_image[0] = ImageIO.read(iresource.getInputStream());
+
+            // load animation
+            animation = (AnimationMetadataSection) iresource.getMetadata("animation");
 
             // load the stone texture
             stone_image = ImageIO.read(iresourceBase.getInputStream());
@@ -163,30 +169,34 @@ public class TextureOre extends TextureAtlasSprite {
             return true;
         }
 
+        int h = ore_image[0].getHeight();
+
         // create an ARGB output image that will be used as our texture
-        output_image = new BufferedImage(w, w, 2);
+        output_image = new BufferedImage(w, h, 2);
 
         // create some arrays t hold the pixel data
         // pixel data is in the form 0xaarrggbb
         int[] ore_data = new int[w * w];
         int[] stone_data = new int[w * w];
 
-        // read the ARGB color data into our arrays
-        ore_image[0].getRGB(0, 0, output_image.getWidth(), output_image.getWidth(), ore_data, 0, output_image.getWidth());
-        stone_image.getRGB(0, 0, w, w, stone_data, 0, stone_image.getWidth());
+        stone_image.getRGB(0, 0, w, w, stone_data, 0, w);
 
-        // generate our new texture
-        int[] new_data = createDenseTexture(w, ore_data, stone_data, renderType);
+        for (int y = 0; y < h; y += w) {
+            // read the ARGB color data into our arrays
+            ore_image[0].getRGB(0, y, w, w, ore_data, 0, w);
 
-        // write the new image data to the output image buffer
-        output_image.setRGB(0, 0, output_image.getWidth(), output_image.getHeight(), new_data, 0, output_image.getWidth());
+            // generate our new texture
+            int[] new_data = createDenseTexture(w, ore_data, stone_data, renderType);
+
+            // write the new image data to the output image buffer
+            output_image.setRGB(0, y, w, w, new_data, 0, w);
+        }
 
         // replace the old texture
         ore_image[0] = output_image;
 
-        // load the texture (note the null is where animation data would
-        // normally go since we don't support animation yet)
-        this.loadSprite(ore_image, null, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
+        // load the texture
+        this.loadSprite(ore_image, animation, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
 
         LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
         return false;
