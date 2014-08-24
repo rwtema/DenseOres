@@ -50,7 +50,7 @@ public class TextureOre extends TextureAtlasSprite {
     private int renderType = 0;
 
     public TextureOre(DenseOre denseOre) {
-        this(denseOre.texture, denseOre.underlyingBlock);
+        this(denseOre.texture, denseOre.underlyingBlocktexture);
         renderType = denseOre.rendertype;
     }
 
