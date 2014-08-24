@@ -1,5 +1,7 @@
 package com.rwtema.denseores;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 // Custom texture class to handle the ore generation
+@SideOnly(Side.CLIENT)
 public class TextureOre extends TextureAtlasSprite {
 
     private int n;
@@ -112,7 +115,6 @@ public class TextureOre extends TextureAtlasSprite {
     // the
     // code for custom mip-mapping textures and animation removed.
     // TODO: add animation support
-    // TODO: add check for textures being of different sizes
     public boolean load(IResourceManager manager, ResourceLocation location) {
 
         // get mipmapping level
@@ -157,7 +159,7 @@ public class TextureOre extends TextureAtlasSprite {
         }
 
         if (stone_image.getWidth() != w) {
-            LogHelper.error("Error generating texture. Unable to find base texture with same size.");
+            LogHelper.error("Error generating texture" + name + ". Unable to find base texture with same size.");
             return true;
         }
 

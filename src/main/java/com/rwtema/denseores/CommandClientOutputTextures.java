@@ -1,5 +1,7 @@
 package com.rwtema.denseores;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -10,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 //Command to allow texture pack makers to retrieve the generated textures
+@SideOnly(Side.CLIENT)
 public class CommandClientOutputTextures extends CommandBase {
     @Override
     public String getCommandName() {
