@@ -46,6 +46,24 @@ public class BlockDenseOre extends BlockOre {
         return super.canHarvestBlock(player, meta);
     }
 
+    @Override
+    public int getHarvestLevel(int meta)
+    {
+        if (isValid(meta))
+            return getBlock(meta).getHarvestLevel(getEntry(meta).metadata);
+
+        return super.getHarvestLevel(meta);
+    }
+
+    @Override
+    public String getHarvestTool(int meta)
+    {
+        if (isValid(meta))
+            return getBlock(meta).getHarvestTool(getEntry(meta).metadata);
+
+        return super.getHarvestTool(meta);
+    }
+
     // Ore Entry stuff
     public DenseOre[] entry = new DenseOre[16];
     public Block[] baseBlocks = new Block[16];
