@@ -1,2 +1,8 @@
 denseores.prefix=밀집된 ORENAME
 denseores.command.help='denseoretextures' 폴더에 생성된 텍스쳐를 출력합니다
+denseores.commandIdentify.help=블럭의 레지스트리를 식별한후 택스처를 출력합니다
+denseores.commandIdentify.invalid=현재 보유한 아이템은 블럭이 아닙니다.
+denseores.commandIdentify.invalidtexture=유효한 택스처를 찾을 수 없습니다.
+denseores.commandIdentify.multipleTextures=S:baseBlockTexture 에 사용가능한 택스쳐가 여러개입니다.
+denseores.commandIdentify.start=-= 분석한 블럭: %s =-
+denseores.commandIdentify.obligitarydisclaimer=주의 : 이 값은 정확하지 않을수도 있습니다.
