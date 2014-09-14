@@ -1,5 +1,7 @@
 package com.rwtema.denseores;
 
+import java.io.File;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -18,16 +20,21 @@ public class DenseOresMod {
 
     @SidedProxy(serverSide = "com.rwtema.denseores.Proxy", clientSide = "com.rwtema.denseores.ProxyClient")
     public static Proxy proxy;
+    
+    private File config;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        LogHelper.info("Ph'nglui mglw'nafh, y'uln Dense Ores shugg ch'agl");
-        DenseOresConfig.instance.loadConfig(event.getSuggestedConfigurationFile());
-        DenseOresRegistry.buildBlocks();
+    	config = event.getSuggestedConfigurationFile();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+    	// load the config in the init to make sure other mods have finished loading
+    	LogHelper.info("Ph'nglui mglw'nafh, y'uln Dense Ores shugg ch'agl");
+        DenseOresConfig.instance.loadConfig(config);
+        DenseOresRegistry.buildBlocks();
+    	
         DenseOresRegistry.buildOreDictionary();
         ModIntegration.addModIntegration();
 
