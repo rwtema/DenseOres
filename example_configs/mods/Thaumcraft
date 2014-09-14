@@ -1,0 +1,27 @@
+# Example Config File
+# Make sure to replace block_X with a proper number
+
+ores {
+    block_X {
+        S:baseBlock=Thaumcraft:blockCustomOre
+        I:baseBlockMeta=0
+        S:baseBlockTexture=thaumcraft:cinnibar
+        D:denseOreProbability=1
+        I:renderType=1
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+
+    block_X {
+        S:baseBlock=Thaumcraft:blockCustomOre
+        I:baseBlockMeta=7
+        S:baseBlockTexture=thaumcraft:amberore
+        D:denseOreProbability=1
+        I:renderType=1
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+
+}
+
+
