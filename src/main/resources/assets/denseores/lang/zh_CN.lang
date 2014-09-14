@@ -1,0 +1,8 @@
+denseores.prefix=密集ORENAME
+denseores.command.help=将当前生成材质输出到'denseoretextures'文件夹.
+denseores.commandIdentify.help=识别这方块的注册名称及其材质
+denseores.commandIdentify.invalid=当前手里所持物品并非一个方块
+denseores.commandIdentify.invalidtexture=无法找到有效材质
+denseores.commandIdentify.multipleTextures=有多个可用材质给S:baseBlockTexture
+denseores.commandIdentify.start=-= 正在分析物品: %s =-
+denseores.commandIdentify.obligitarydisclaimer=免责声明: 这些数值不能保证一定准确

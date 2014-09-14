@@ -2,7 +2,7 @@
 {
   "modid": "denseores",
   "name": "Dense Ores",
-  "description": "Adds a new ore variant to the game",
+  "description": "Adds new ore variants to the game",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

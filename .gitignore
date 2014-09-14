@@ -14,3 +14,15 @@ gradlew
 gradlew.bat
 .classpath
 .project
+forge-1.7.2-10.12.0.1024-changelog.txt
+.settings/
+build.bat
+src/main/resources/assets/test/
+DenseOres.iml
+DenseOres.ipr
+DenseOres.iws
+forge-1.7.2-10.12.1.1065-changelog.txt
+out/*
+out/production/DenseOres/mcmod.info
+forge-*-changelog.txt
+src/main/java/com/rwtema/debug/

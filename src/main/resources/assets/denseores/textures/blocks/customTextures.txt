@@ -1,0 +1,5 @@
+Creating overrides for generated textures with texture packs.
+
+If you are not satisfied with the generated texture for your packs, you can place overrides. First create a subfolder for the mod which owns the correct texture (which will be "minecraft" in the case of vanilla textures) and place the overrides in that folder.
+
+If you wish to load the generated textures from Minecraft, run the command "denseores_outputtextures" ingame. This will output the textures to the folder 'denseoretextures' in your Minecraft directory. It will also put them into the correct directory structure for proper addition to a texture pack.
