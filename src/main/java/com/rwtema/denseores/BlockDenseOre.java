@@ -289,4 +289,24 @@ public class BlockDenseOre extends BlockOre {
         return this.blockHardness;
     }
 
+    @Override
+    public int getExpDrop(IBlockAccess world, int metadata, int fortune) {
+        int result = 0;
+        if(isValid(metadata)) {
+            Block base = getBlock(metadata);
+
+            if(base == null)
+                return 0;
+
+            int m = getMetadata(metadata);
+
+            //get base exp dropped 3 times
+            for(int i = 0; i < 3; i++) {
+                result += base.getExpDrop(world, m, fortune);
+            }
+        } else {
+            return getNullOverride((World)world).getExpDrop(world, 0, fortune);
+        }
+        return result;
+    }
 }
