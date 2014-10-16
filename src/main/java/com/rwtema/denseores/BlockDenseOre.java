@@ -18,6 +18,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -226,6 +227,41 @@ public class BlockDenseOre extends BlockOre {
     public int damageDropped(int meta) {
         return meta;
     }
+
+    // drop the block with a predefined chance
+    @Override
+    public void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float p, int fortune) {
+        if (world.isRemote)
+            return;
+
+        // Get drops x3
+        ArrayList<ItemStack> items = getDrops(world, x, y, z, metadata, fortune);
+
+        // Call to forge events to see if our dense ore block should be dropped? not sure why anyone would mess with this but hey...
+        p = ForgeEventFactory.fireBlockHarvesting(items, world, this, x, y, z, metadata, fortune, p, false, harvesters.get());
+
+        if (p == 0) return;
+
+        // now call the forge events to see if our base ore block should be dropped
+        if (isValid(metadata)) {
+            Block base = getBlock(metadata);
+
+            if (base != null) {
+                int m = getMetadata(metadata);
+                p = ForgeEventFactory.fireBlockHarvesting(items, world, base, x, y, z, m, fortune, p, false, harvesters.get());
+            }
+        }
+
+        if (p == 0) return;
+
+        for (ItemStack item : items) {
+            if (p == 1 || world.rand.nextFloat() <= p) {
+                this.dropBlockAsItem(world, x, y, z, item);
+            }
+        }
+
+    }
+
 
     // get drops
     @Override
