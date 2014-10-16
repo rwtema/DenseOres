@@ -241,13 +241,7 @@ public class BlockDenseOre extends BlockOre {
 
             // get base drops 3 times
             for (int j = 0; j < 3; j++) {
-                int count = base.quantityDropped(m, fortune, world.rand);
-                for (int i = 0; i < count; i++) {
-                    Item item = base.getItemDropped(m, world.rand, fortune);
-                    if (item != null) {
-                        ret.add(new ItemStack(item, 1, base.damageDropped(m)));
-                    }
-                }
+                ret.addAll(base.getDrops(world, x, y, z, m, fortune));
             }
         } else {
             return getNullOverride(world, x, z).getDrops(world, x, y, z, 0, fortune);
