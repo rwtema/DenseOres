@@ -60,8 +60,6 @@ public class DenseModelGenerator {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void bakeModels(ModelBakeEvent event) {
-        HackMapper defaultStateMapper = new HackMapper();
-
         DenseOresMod.block.models = new IBakedModel[BlockDenseOre.maxMetdata];
         DenseOresMod.block.invmodels = new IBakedModel[BlockDenseOre.maxMetdata];
 
@@ -71,6 +69,8 @@ public class DenseModelGenerator {
             int meta = denseOre.id;
 
             ModelResourceLocation modelResourceLocation = defaultStateMapper.getModelResourceLocation(DenseOresMod.block.getStateFromMeta(meta));
+            // get the model registries entry for the current Dense Ore block state
+            ModelResourceLocation modelResourceLocation = ModelBuilder.getModelResourceLocation(DenseOresMod.block.getStateFromMeta(meta));
             IBakedModel baseModel = event.modelManager.getBlockModelShapes().getModelForState(DenseOresMod.block.getBaseBlockState(meta));
 
             DenseOresMod.block.models[meta] = ModelBuilder.changePrimaryIcon(baseModel, icons[meta]);
@@ -82,14 +82,8 @@ public class DenseModelGenerator {
 
             ModelResourceLocation inventory = new ModelResourceLocation(modelResourceLocation, "inventory");
             event.modelRegistry.putObject(inventory, DenseOresMod.block.invmodels[meta]);
-            itemModelMesher.register(Item.getItemFromBlock(DenseOresMod.block), meta, inventory);
-        }
-    }
 
-    public class HackMapper extends DefaultStateMapper {
-        @Override
-        public ModelResourceLocation getModelResourceLocation(IBlockState p_178132_1_) {
-            return super.getModelResourceLocation(p_178132_1_);
+            itemModelMesher.register(Item.getItemFromBlock(DenseOresMod.block), meta, inventory);
         }
     }
 }
