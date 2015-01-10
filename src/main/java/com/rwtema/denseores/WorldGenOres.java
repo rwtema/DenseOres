@@ -18,6 +18,7 @@ public class WorldGenOres implements IWorldGenerator {
     private static final String DENSEORES = "DenseOres";
 
     // generates blocks in the world
+    private static Random rand = new Random();
 
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
@@ -77,8 +78,6 @@ public class WorldGenOres implements IWorldGenerator {
         }
     }
 
-    private static Random rand = new Random();
-
     @SubscribeEvent
     public void retroGen(ChunkDataEvent.Load event) {
         NBTTagCompound chunkData = event.getData();
@@ -122,7 +121,7 @@ public class WorldGenOres implements IWorldGenerator {
             }
         }
         rgen.setTag(dense_ore_blocks.getUnlocalizedName(), b);
-        
+
         chunkData.setTag(DENSEORES, rgen);
     }
 }

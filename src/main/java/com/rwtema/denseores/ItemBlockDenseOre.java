@@ -10,8 +10,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class ItemBlockDenseOre extends ItemBlock {
-    BlockDenseOre oreBlock;
     public static ItemBlockDenseOre INSTANCE;
+    BlockDenseOre oreBlock;
 
     // construct an itemblock for the given block. (Note: no itemid!)
     public ItemBlockDenseOre(Block block) {

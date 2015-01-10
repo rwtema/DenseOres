@@ -36,7 +36,11 @@ public class BlockDenseOre extends BlockOre {
     public PropertyInteger METADATA;
     public IBakedModel[] models;
     public IBakedModel[] invmodels;
-
+    // Ore Entry stuff
+    public DenseOre[] entry;
+    public Block[] baseBlocks;
+    public boolean[] valid;
+    public boolean init = false;
     public BlockDenseOre() {
         super();
 
@@ -46,26 +50,20 @@ public class BlockDenseOre extends BlockOre {
         valid = new boolean[maxMetdata];
     }
 
-    public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(METADATA, meta);
-    }
-
-    public int getMetaFromState(IBlockState state) {
-        return (Integer) state.getValue(METADATA);
-    }
-
-    // Ore Entry stuff
-    public DenseOre[] entry;
-    public Block[] baseBlocks;
-    public boolean[] valid;
-    public boolean init = false;
-
     public static Block getBlock(String name) {
         return GameData.getBlockRegistry().getObject(new ResourceLocation(name));
     }
 
     public static Block getBlock(DenseOre ore) {
         return ore != null ? getBlock(ore.baseBlock) : null;
+    }
+
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(METADATA, meta);
+    }
+
+    public int getMetaFromState(IBlockState state) {
+        return (Integer) state.getValue(METADATA);
     }
 
     public void init() {

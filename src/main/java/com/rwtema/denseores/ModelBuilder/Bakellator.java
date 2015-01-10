@@ -1,14 +1,15 @@
 package com.rwtema.denseores.ModelBuilder;
 
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.EnumFacing;
+
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Bakellator {
     int side;
@@ -20,22 +21,22 @@ public class Bakellator {
     int tintIndex;
     int color;
 
-    LinkedList<BakedQuad> generalQuads ;
+    LinkedList<BakedQuad> generalQuads;
     ArrayList<LinkedList<BakedQuad>> faceQuads;
     int normal;
 
+    public Bakellator() {
+        reset();
+    }
+
     public SimpleBakedModel bake(TextureAtlasSprite texture) {
-        return bake(texture, true,true, ItemCameraTransforms.DEFAULT);
+        return bake(texture, true, true, ItemCameraTransforms.DEFAULT);
     }
 
     public SimpleBakedModel bake(TextureAtlasSprite texture, boolean ambientOcclusion, boolean gui3d, ItemCameraTransforms camera) {
         SimpleBakedModel model = new SimpleBakedModel(generalQuads, faceQuads, ambientOcclusion, gui3d, texture, camera);
         reset();
         return model;
-    }
-
-    public Bakellator() {
-        reset();
     }
 
     public void reset() {

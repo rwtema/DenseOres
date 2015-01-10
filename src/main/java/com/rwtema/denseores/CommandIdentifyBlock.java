@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 // Command to identify a block's name and properties (makes for easier configuration)
 // TODO: Reimplement in 1.8
 @SideOnly(Side.CLIENT)
-public class CommandIdentifyBlock  {
+public class CommandIdentifyBlock {
 //    @Override
 //    public String getCommandName() {
 //        return "denseores_identifyblock";

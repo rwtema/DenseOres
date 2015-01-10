@@ -24,6 +24,9 @@ public class DenseOre {
     public int retroGenId;
     public String baseOreDictionary = "";
     public String oreDictionary = "";
+    BlockDenseOre block;
+    boolean initSmelt = false;
+    private ItemStack smelt;
 
     public DenseOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId, int renderType) {
         this.id = id;
@@ -47,8 +50,6 @@ public class DenseOre {
         this.block = block;
     }
 
-    BlockDenseOre block;
-
     public Block getBaseBlock() {
         if (Block.blockRegistry.containsKey(new ResourceLocation(baseBlock)))
             return Block.getBlockFromName(baseBlock);
@@ -58,11 +59,6 @@ public class DenseOre {
     public ItemStack newStack(int stacksize) {
         return new ItemStack(getBaseBlock(), stacksize, metadata);
     }
-
-
-    private ItemStack smelt;
-    boolean initSmelt = false;
-
 
     public ItemStack getSmeltingRecipe() {
         if (initSmelt)
@@ -79,9 +75,9 @@ public class DenseOre {
             else if (out.stackSize < 1)
                 out.stackSize = 1;
         }
-        
+
         smelt = out;
-        
+
         return out;
     }
 }

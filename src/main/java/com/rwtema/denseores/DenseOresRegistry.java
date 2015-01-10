@@ -12,6 +12,7 @@ import java.util.Map;
 public class DenseOresRegistry {
 
     public static Map<Integer, DenseOre> ores = new HashMap<Integer, DenseOre>();
+    public static String blockPrefix = DenseOresMod.MODID;
 
     // add vanilla entries (TODO: add a way to disable vanilla ores)
     public static void initVanillaOres() {
@@ -25,8 +26,6 @@ public class DenseOresRegistry {
         registerOre(7, "minecraft:quartz_ore", 0, 1, "netherrack", "quartz_ore", 0, 0);
     }
 
-    public static String blockPrefix = DenseOresMod.MODID;
-
     // create the blocks needed
     public static void buildBlocks() {
         int maxOre = 0;
@@ -34,7 +33,7 @@ public class DenseOresRegistry {
             maxOre = Math.max(ore.id, maxOre);
         }
 
-        BlockDenseOre.maxMetdata = maxOre+1;
+        BlockDenseOre.maxMetdata = maxOre + 1;
         DenseOresMod.block = new BlockDenseOre();
 
         GameRegistry.registerBlock(DenseOresMod.block, ItemBlockDenseOre.class, "blockDenseOre");
