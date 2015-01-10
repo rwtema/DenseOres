@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class DenseModelGenerator {
     public static DenseModelGenerator INSTANCE = new DenseModelGenerator();
     public static TextureAtlasSprite[] icons;
-    public TextureMap textureMap;
+
 
     public static void register() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
@@ -28,7 +28,7 @@ public class DenseModelGenerator {
     public void textureStitch(TextureStitchEvent.Pre event) {
         icons = new TextureAtlasSprite[BlockDenseOre.maxMetdata];
 
-        textureMap = event.map;
+        TextureMap textureMap = event.map;
 
         for (DenseOre entry : DenseOresRegistry.ores.values()) {
             int i = entry.id;
