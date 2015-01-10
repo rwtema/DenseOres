@@ -58,7 +58,7 @@ public class DenseModelGenerator {
 
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void bakeModels(ModelBakeEvent event) {
         HackMapper defaultStateMapper = new HackMapper();
 
