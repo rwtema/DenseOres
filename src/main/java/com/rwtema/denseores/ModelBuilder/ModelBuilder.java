@@ -89,11 +89,12 @@ public class ModelBuilder {
     }
 
     public static List newBlankFacingLists() {
-        ArrayList<Object> objects = Lists.newArrayListWithCapacity(6);
-        for (int j = 0; j < EnumFacing.values().length; ++j) {
-            objects.add(Lists.newLinkedList());
+        Object[] list = new Object[EnumFacing.values().length];
+        for (int i = 0; i < EnumFacing.values().length; ++i) {
+            list[i] = Lists.newLinkedList();
         }
-        return objects;
+
+        return ImmutableList.copyOf(list);
     }
 
 
