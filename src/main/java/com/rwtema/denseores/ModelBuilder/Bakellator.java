@@ -11,6 +11,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+// WIP class that generates Baked Models using code that mimics the old tessellator code
 public class Bakellator {
     int side;
 
