@@ -1,78 +1,67 @@
 package com.rwtema.denseores;
 
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/*  I'm using the 16 metadata values to store each ore block.
+/*  I'm using the MAX_METADATA metadata values to store each ore block.
  *  (We don't really need to worry about block ids in 1.7
  *   but that's no reason to be wasteful)
  */
 
 public class BlockDenseOre extends BlockOre {
 
-    // no constructor needed here but you still need to specify a material for
-    // other blocks.
+    public static int maxMetdata;
+    public PropertyInteger METADATA;
+    public IBakedModel[] models;
+    public IBakedModel[] invmodels;
 
-    @Override
-    protected boolean canSilkHarvest() {
-        return true;
+    public BlockDenseOre() {
+        super();
+
+        this.setDefaultState(this.blockState.getBaseState().withProperty(METADATA, 0));
+        entry = new DenseOre[maxMetdata];
+        baseBlocks = new Block[maxMetdata];
+        valid = new boolean[maxMetdata];
     }
 
-    @Override
-    public boolean canHarvestBlock(EntityPlayer player, int meta) {
-        if (isValid(meta))
-            return getBlock(meta).canHarvestBlock(player, getEntry(meta).metadata);
-
-        return super.canHarvestBlock(player, meta);
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(METADATA, meta);
     }
 
-    @Override
-    public int getHarvestLevel(int meta)
-    {
-        if (isValid(meta))
-            return getBlock(meta).getHarvestLevel(getEntry(meta).metadata);
-
-        return super.getHarvestLevel(meta);
-    }
-
-    @Override
-    public String getHarvestTool(int meta)
-    {
-        if (isValid(meta))
-            return getBlock(meta).getHarvestTool(getEntry(meta).metadata);
-
-        return super.getHarvestTool(meta);
+    public int getMetaFromState(IBlockState state) {
+        return (Integer) state.getValue(METADATA);
     }
 
     // Ore Entry stuff
-    public DenseOre[] entry = new DenseOre[16];
-    public Block[] baseBlocks = new Block[16];
-    public boolean[] valid = new boolean[16];
+    public DenseOre[] entry;
+    public Block[] baseBlocks;
+    public boolean[] valid;
     public boolean init = false;
 
     public static Block getBlock(String name) {
-        return GameData.getBlockRegistry().getObject(name);
+        return GameData.getBlockRegistry().getObject(new ResourceLocation(name));
     }
 
     public static Block getBlock(DenseOre ore) {
@@ -82,10 +71,16 @@ public class BlockDenseOre extends BlockOre {
     public void init() {
         init = true;
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < maxMetdata; i++) {
             baseBlocks[i] = getBlock(entry[i]);
             valid[i] = baseBlocks[i] != null && baseBlocks[i] != Blocks.air;
         }
+    }
+
+
+    protected BlockState createBlockState() {
+        METADATA = PropertyInteger.create("Type", 0, maxMetdata - 1);
+        return new BlockState(this, METADATA);
     }
 
     public Block getBlock(int id) {
@@ -95,30 +90,36 @@ public class BlockDenseOre extends BlockOre {
         return baseBlocks[id];
     }
 
+    public IBlockState getBaseBlockState(int id) {
+        return entry[id].getBaseBlock().getStateFromMeta(entry[id].metadata);
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-        int id = world.getBlockMetadata(x, y, z);
+    public void randomDisplayTick(World world, BlockPos pos, IBlockState state, Random rand) {
+        int id = getMetaFromState(world.getBlockState(pos));
+
         if (!isValid(id))
             return;
 
         try {
-            world.setBlock(x, y, z, getBlock(id), getMetadata(id), 0);
+            world.setBlockState(pos, getBaseBlockState(id), 0);
             for (int i = 0; i < 1 + rand.nextInt(3); i++)
-                getBlock(id).randomDisplayTick(world, x, y, z, rand);
-        } catch (Exception e) {
-            world.setBlock(x, y, z, this, id, 0);
-            throw new RuntimeException(e);
+                getBlock(id).randomDisplayTick(world, pos, getBaseBlockState(id), rand);
+        } finally {
+            world.setBlockState(pos, state, 0);
         }
+    }
 
-        world.setBlock(x, y, z, this, id, 0);
+    public boolean isValid(IBlockState id) {
+        return isValid(getMetaFromState(id));
     }
 
     public boolean isValid(int id) {
         if (!init)
             init();
 
-        if (id < 0 || id >= 16)
+        if (id < 0 || id >= maxMetdata)
             return false;
 
         return valid[id];
@@ -133,45 +134,21 @@ public class BlockDenseOre extends BlockOre {
     }
 
     // add creative blocks
+    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List list) {
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < maxMetdata; i++)
             if (isValid(i))
                 list.add(new ItemStack(item, 1, i));
 
     }
 
-    public IIcon[] icons = new IIcon[16];
-
-    // get icon from side/metadata
-    @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(int side, int meta) {
-        if (isValid(meta))
-            return icons[meta];
-        else {
-            return getNullOverride(Minecraft.getMinecraft().theWorld).getIcon(0, 0);
-        }
-    }
-
-    // get icon from side/metadata
-    @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (isValid(meta))
-            return icons[meta];
-        else {
-            return getNullOverride(Minecraft.getMinecraft().theWorld, x, z).getIcon(0, 0);
-        }
-    }
-
-    public Block getNullOverride(World world, int x, int z) {
+    public Block getNullOverride(IBlockAccess world, BlockPos pos) {
         if (world == null)
             return Blocks.stone;
 
-        BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+        BiomeGenBase biome = world.getBiomeGenForCoords(pos);
         if (biome == BiomeGenBase.hell)
             return Blocks.netherrack;
 
@@ -181,162 +158,132 @@ public class BlockDenseOre extends BlockOre {
         return getNullOverride(world);
     }
 
-    public Block getNullOverride(World world) {
+    public Block getNullOverride(IBlockAccess blockAccess) {
+        if (!(blockAccess instanceof World))
+            return Blocks.stone;
+
+        World world = (World) blockAccess;
+
         if (world.provider == null)
             return Blocks.stone;
 
-        if (world.provider.dimensionId == -1)
+        if (world.provider.getDimensionId() == -1)
             return Blocks.netherrack;
 
-        if (world.provider.dimensionId == 1)
+        if (world.provider.getDimensionId() == 1)
             return Blocks.end_stone;
 
         return Blocks.stone;
     }
 
     // register icons
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerBlockIcons(IIconRegister register) {
-        if (register instanceof TextureMap) { // should always be true (...but
-            // you never know)
-            TextureMap map = (TextureMap) register;
-            for (int i = 0; i < 16; i++) {
-                if (isValid(i)) {
+    public void registerBlockIcons(TextureMap register) {
 
-                    // Registering custom icon classes
 
-                    // name of custom icon ( must equal getIconName() )
-                    String name = TextureOre.getDerivedName(entry[i].texture);
-                    // see if there's already an icon of that name
-                    TextureAtlasSprite texture = map.getTextureExtry(name);
-                    if (texture == null) {
-                        // if not create one and put it in the register
-                        texture = new TextureOre(entry[i]);
-                        map.setTextureEntry(name, texture);
-                    }
-
-                    icons[i] = map.getTextureExtry(name);
-                }
-            }
-        }
-    }
-
-    // metadata dropped
-    @Override
-    public int damageDropped(int meta) {
-        return meta;
     }
 
     // drop the block with a predefined chance
     @Override
-    public void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float p, int fortune) {
-        if (world.isRemote)
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+        if (worldIn.isRemote || worldIn.restoringBlockSnapshots)// do not drop items while restoring blockstates, prevents item dupe
             return;
 
-        // Get drops x3
-        ArrayList<ItemStack> items = getDrops(world, x, y, z, metadata, fortune);
+        List<ItemStack> items = getDrops(worldIn, pos, state, fortune);
+        chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, state, fortune, chance, false, harvesters.get());
 
-        // Call to forge events to see if our dense ore block should be dropped? not sure why anyone would mess with this but hey...
-        p = ForgeEventFactory.fireBlockHarvesting(items, world, this, x, y, z, metadata, fortune, p, false, harvesters.get());
-
-        if (p == 0) return;
+        if (chance == 0) return;
 
         // now call the forge events to see if our base ore block should be dropped
-        if (isValid(metadata)) {
-            Block base = getBlock(metadata);
+        if (isValid(state)) {
+            IBlockState base = getBaseBlockState(getMetaFromState(state));
 
             if (base != null) {
-                int m = getMetadata(metadata);
-                p = ForgeEventFactory.fireBlockHarvesting(items, world, base, x, y, z, m, fortune, p, false, harvesters.get());
+                chance = net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, base, fortune, chance, false, harvesters.get());
             }
         }
 
-        if (p == 0) return;
+        if (chance == 0) return;
 
         for (ItemStack item : items) {
-            if (p == 1 || world.rand.nextFloat() <= p) {
-                this.dropBlockAsItem(world, x, y, z, item);
+            if (worldIn.rand.nextFloat() <= chance) {
+                spawnAsEntity(worldIn, pos, item);
             }
         }
+    }
 
+    public Block getBlock(IBlockState state) {
+        return getBlock(getMetaFromState(state));
     }
 
 
     // get drops
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-        if (isValid(metadata)) {
-            Block base = getBlock(metadata);
+
+        int meta = getMetaFromState(state);
+
+        if (isValid(meta)) {
+            Block base = getBlock(meta);
 
             if (base == null)
                 return ret;
 
-            int m = getMetadata(metadata);
+            IBlockState m = getBaseBlockState(meta);
 
             // get base drops 3 times
             for (int j = 0; j < 3; j++) {
-                ret.addAll(base.getDrops(world, x, y, z, m, fortune));
+                ret.addAll(base.getDrops(world, pos, m, fortune));
             }
         } else {
-            return getNullOverride(world, x, z).getDrops(world, x, y, z, 0, fortune);
+            Block block = getNullOverride(world, pos);
+            return block.getDrops(world, pos, block.getDefaultState(), fortune);
         }
         return ret;
     }
 
-    private int getMetadata(int id) {
-        return entry[id].metadata;
-    }
-
     // get hardness
     @Override
-    public float getBlockHardness(World world, int x, int y, int z) {
-        int metadata = world.getBlockMetadata(x, y, z);
-        if (isValid(metadata)) {
-            Block base = getBlock(metadata);
-            float t = this.blockHardness;
+    public float getBlockHardness(World world, BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() != this) return 1;
+        int id = getMetaFromState(state);
 
-            // quickly change metadata to match what is expected
-            world.setBlockMetadataWithNotify(x, y, z, getMetadata(metadata), 0);
-            try {
-                t = base.getBlockHardness(world, x, y, z);
-            } catch (Exception e) {
-                // oh oh, it seems it didn't like having a different block id.
-                LogHelper.error("The ore block " + entry[metadata].id + "(" + entry[metadata].baseBlock + ")"
-                        + " has thrown an error while getting the hardness value. It is likely not compatible with Dense ores", e);
+        if (!isValid(id))
+            return 1;
 
-                world.setBlockMetadataWithNotify(x, y, z, getMetadata(metadata), 0); // just in case
-
-                throw new RuntimeException(e);
-            }
-
-            // set it back
-            world.setBlockMetadataWithNotify(x, y, z, metadata, 0);
-
-            return t;
+        try {
+            world.setBlockState(pos, getBaseBlockState(id), 0);
+            return getBlock(id).getBlockHardness(world, pos);
+        } finally {
+            world.setBlockState(pos, state, 0);
         }
-        return this.blockHardness;
     }
 
     @Override
-    public int getExpDrop(IBlockAccess world, int metadata, int fortune) {
-        int result = 0;
-        if(isValid(metadata)) {
-            Block base = getBlock(metadata);
+    public int getExpDrop(IBlockAccess iBlockAccess, BlockPos pos, int fortune) {
+        if (!(iBlockAccess instanceof World))
+            return super.getExpDrop(iBlockAccess, pos, fortune);
 
-            if(base == null)
-                return 0;
+        World world = ((World) iBlockAccess);
 
-            int m = getMetadata(metadata);
+        IBlockState state = world.getBlockState(pos);
+        int id = getMetaFromState(state);
 
-            //get base exp dropped 3 times
-            for(int i = 0; i < 3; i++) {
-                result += base.getExpDrop(world, m, fortune);
-            }
-        } else {
-            return getNullOverride((World)world).getExpDrop(world, 0, fortune);
+        if (!isValid(id))
+            return super.getExpDrop(iBlockAccess, pos, fortune);
+
+        try {
+            world.setBlockState(pos, getBaseBlockState(id), 0);
+            return getBlock(id).getExpDrop(world, pos, fortune) * 3;
+        } finally {
+            world.setBlockState(pos, state, 0);
         }
-        return result;
+
+    }
+
+    @Override
+    public int damageDropped(IBlockState state) {
+        return getMetaFromState(state);
     }
 }

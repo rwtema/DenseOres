@@ -1,11 +1,10 @@
 package com.rwtema.denseores;
 
-import cpw.mods.fml.common.Loader;
+
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 // Load the config file
 public class DenseOresConfig {

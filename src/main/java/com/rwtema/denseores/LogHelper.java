@@ -44,4 +44,9 @@ public class LogHelper {
     public static void error(String s) {
         logger.error(s);
     }
+
+    public static void describe(Object o) {
+        if (o == null) info(null);
+        else info(o.getClass().getSimpleName() + " " + o.toString());
+    }
 }

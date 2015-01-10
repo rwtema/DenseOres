@@ -5,15 +5,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class ItemBlockDenseOre extends ItemBlock {
     BlockDenseOre oreBlock;
+    public static ItemBlockDenseOre INSTANCE;
 
     // construct an itemblock for the given block. (Note: no itemid!)
     public ItemBlockDenseOre(Block block) {
         super(block);
+        INSTANCE = this;
         // oreBlock should always be a BlockDenseOre
         oreBlock = (BlockDenseOre) block;
         this.setHasSubtypes(true);
@@ -44,6 +47,6 @@ public class ItemBlockDenseOre extends ItemBlock {
     @Override
     public Entity createEntity(World world, Entity location, ItemStack itemstack) {
         return new EntityItem(world, location.posX, location.posY, location.posZ,
-                new ItemStack(oreBlock.getNullOverride(world, (int) location.posX, (int) location.posZ), itemstack.stackSize));
+                new ItemStack(oreBlock.getNullOverride(world, new BlockPos(location)), itemstack.stackSize));
     }
 }

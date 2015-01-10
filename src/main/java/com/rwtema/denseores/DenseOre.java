@@ -3,6 +3,7 @@ package com.rwtema.denseores;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.util.ResourceLocation;
 
 /*
  * Dense ore entry
@@ -49,7 +50,7 @@ public class DenseOre {
     BlockDenseOre block;
 
     public Block getBaseBlock() {
-        if (Block.blockRegistry.containsKey(baseBlock))
+        if (Block.blockRegistry.containsKey(new ResourceLocation(baseBlock)))
             return Block.getBlockFromName(baseBlock);
         return null;
     }
@@ -68,7 +69,7 @@ public class DenseOre {
             return smelt;
 
         initSmelt = true;
-        ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
+        ItemStack out = FurnaceRecipes.instance().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
 
         if (out != null) {
             out = out.copy();

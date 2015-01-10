@@ -1,13 +1,13 @@
 package com.rwtema.denseores;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -64,7 +64,7 @@ public class TextureOre extends TextureAtlasSprite {
     // should we use a custom loader to get our texture?
     public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
 
-        ResourceLocation location1 = new ResourceLocation(location.getResourceDomain(), String.format("%s/%s%s", new Object[]{"textures/blocks", location.getResourcePath(), ".png"}));
+        ResourceLocation location1 = new ResourceLocation(location.getResourceDomain(), String.format("%s/%s%s", new Object[]{"textures", location.getResourcePath(), ".png"}));
         try {
             // check to see if the resource can be loaded (someone added an
             // override)
@@ -196,7 +196,7 @@ public class TextureOre extends TextureAtlasSprite {
         ore_image[0] = output_image;
 
         // load the texture
-        this.loadSprite(ore_image, animation, (float) Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F);
+        this.loadSprite(ore_image, animation);
 
         LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
         return false;
