@@ -1,0 +1,8 @@
+denseores.prefix=Hustý ORENAME
+denseores.command.help=Outputuje právě vygenerované textury do složky 'denseoretextures'.
+denseores.commandIdentify.help=Identifikuje protokol bloku a jeho texturu
+denseores.commandIdentify.invalid=Právě držený předmět není blok
+denseores.commandIdentify.invalidtexture=Nepodařilo se najít platnou texturu
+denseores.commandIdentify.multipleTextures=S:baseBlockTexture má několik dostupných textur
+denseores.commandIdentify.start=-= Analyzuji předmět: %s =-
+denseores.commandIdentify.obligitarydisclaimer=Zřeknutí se odpovědnosti: Tyto hodnoty nemusí být přesné
