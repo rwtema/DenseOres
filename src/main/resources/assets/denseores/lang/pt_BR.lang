@@ -1,0 +1,8 @@
+denseores.prefix=ORENAME Denso
+denseores.command.help=Saídas das texturas atuais direcionadas para a pasta 'denseoretextures'.
+denseores.commandIdentify.help=Identifica o registro do bloco e o nome da textura
+denseores.commandIdentify.invalid=Item atualmente mantido não é um bloco
+denseores.commandIdentify.invalidtexture=Incapaz de encontrar a textura válida
+denseores.commandIdentify.multipleTextures=Existem várias texturas disponíveis para S:baseBlockTexture
+denseores.commandIdentify.start=-= Analisando o Item: %s =-
+denseores.commandIdentify.obligitarydisclaimer=Aviso: Esses valores não são garantidamente exatos
