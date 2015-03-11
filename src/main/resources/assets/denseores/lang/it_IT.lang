@@ -1,8 +1,8 @@
-denseores.prefix=ORENAME denso
+denseores.prefix=ORENAME ricco
 denseores.command.help=Genera le texture usate nella cartella 'denseoretextures'.
 denseores.commandIdentify.help=Identifica il nome di registro e la texture del blocco
 denseores.commandIdentify.invalid=L'oggetto tenuto in mano non è un blocco
 denseores.commandIdentify.invalidtexture=Texture valida non trovata
-denseores.commandIdentify.multipleTextures=Ci sono multipli texture avviabili per S:baseBlockTexture
+denseores.commandIdentify.multipleTextures=Ci sono diverse texture avviabili per S:baseBlockTexture
 denseores.commandIdentify.start=-= Analizzando oggetto: %s =-
-denseores.commandIdentify.obligitarydisclaimer=Attenzione: Questi valori non sono certi ad essere accurati
+denseores.commandIdentify.obligitarydisclaimer=Attenzione: Questi valori potrebbero non essere accurati
