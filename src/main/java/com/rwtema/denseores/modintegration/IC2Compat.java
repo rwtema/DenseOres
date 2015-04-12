@@ -1,6 +1,7 @@
 package com.rwtema.denseores.modintegration;
 
 import com.rwtema.denseores.DenseOre;
+import cpw.mods.fml.common.Loader;
 import ic2.api.recipe.RecipeInputItemStack;
 import ic2.api.recipe.Recipes;
 import net.minecraft.item.ItemStack;
@@ -9,24 +10,17 @@ import java.util.Map;
 
 public class IC2Compat implements ModInterface {
 
-    private static boolean ic2APIPresent;
-
-    static {
-        try {
-            Class.forName("ic2.api.recipe.Recipes");
-            ic2APIPresent = true;
-        } catch (ClassNotFoundException e) {
-            ic2APIPresent = false;
-        }
-    }
 
     @Override
     public void registerOre(DenseOre ore, ItemStack denseOre, ItemStack originalOre) {
-        if (ic2APIPresent)
+        if (Loader.isModLoaded("IC2"))
             registerOre_do(ore, denseOre, originalOre);
     }
 
     private static void registerOre_do(DenseOre ore, ItemStack denseOre, ItemStack originalOre) {
+        if(Recipes.scrapboxDrops == null || Recipes.macerator == null)
+            return;
+
         Map<ItemStack, Float> drops = Recipes.scrapboxDrops.getDrops();
 
         for (Map.Entry<ItemStack, Float> itemStackFloatEntry : drops.entrySet()) {
