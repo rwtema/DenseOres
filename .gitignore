@@ -26,3 +26,4 @@ out/*
 out/production/DenseOres/mcmod.info
 forge-*-changelog.txt
 src/main/java/com/rwtema/debug/
+run/
