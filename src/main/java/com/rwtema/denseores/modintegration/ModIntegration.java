@@ -1,9 +1,9 @@
-package com.rwtema.denseores;
+package com.rwtema.denseores.modintegration;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
+import com.rwtema.denseores.BlockDenseOre;
+import com.rwtema.denseores.DenseOre;
+import com.rwtema.denseores.DenseOresRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,6 +13,10 @@ import java.util.Random;
 
 public class ModIntegration {
     public static final String[] canonOres = {"oreIron", "oreGold", "oreCopper", "oreTin", "oreSilver", "oreLead", "oreNickel", "orePlatinum"};
+    public static final String[] canonSecondaryOres = {"oreNickel", null, "oreGold", "oreIron", "oreLead", "oreSilver", "orePlatinum", null};
+    public static final Random rand = new Random();
+    public static ModInterface[] mods = {new VanillaFurnace(), new TE4Integration()};
+    public static ModInterface[] lastMinutemods = {new ThaumcraftCompat(), new MFRCompat(), new IC2Compat()};
 
     public static boolean isCanonOre(String ore) {
         for (String s : canonOres)
@@ -28,18 +32,6 @@ public class ModIntegration {
         return null;
     }
 
-    public static final String[] canonSecondaryOres = {"oreNickel", null, "oreGold", "oreIron", "oreLead", "oreSilver", "orePlatinum", null};
-
-    public static interface ModInterface {
-        public void registerOre(DenseOre ore, ItemStack input, ItemStack output);
-    }
-
-    public static NBTTagCompound getItemStackNBT(ItemStack item, int newStackSize) {
-        NBTTagCompound tag = getItemStackNBT(item);
-        tag.setByte("Count", (byte) newStackSize);
-        return tag;
-    }
-
     public static NBTTagCompound getItemStackNBT(ItemStack item) {
         NBTTagCompound tag = new NBTTagCompound();
         item.writeToNBT(tag);
@@ -51,9 +43,6 @@ public class ModIntegration {
         newitem.stackSize = newStackSize;
         return newitem;
     }
-
-    public static Random rand = new Random();
-
 
     public static boolean isOreSmeltsToIngot(String oreDict) {
         if ("".equals(oreDict))
@@ -82,7 +71,6 @@ public class ModIntegration {
         return out;
     }
 
-
     public static ItemStack getFurnace(DenseOre toSmelt, float multiplier) {
         ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(toSmelt.newStack(1));
 
@@ -107,62 +95,11 @@ public class ModIntegration {
         return out;
     }
 
-    public static class VanillaFurnace implements ModInterface {
-
-        @Override
-        public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
-            ItemStack out = getFurnace(ore, 3F);
-            if (out != null) {
-                GameRegistry.addSmelting(input, out, 1.0F);
-            }
-        }
-    }
-
-    public static class TE4Integration implements ModInterface {
-        @Override
-        public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
-            addPulverizer(input, output);
-
-            if (isCanonOre(ore.baseOreDictionary) && getFurnace(ore, 1) != null) {
-                ItemStack slag = GameRegistry.findItemStack("ThermalExpansion", "slagRich", 1);
-                String s = getSecondCanonOre(ore.baseOreDictionary);
-                if (s != null && getSmeltedIngot(s, ore.modOwner) != null)
-                    slag = cloneStack(getSmeltedIngot(s, ore.modOwner), 3);
-
-                addSmelter(input, new ItemStack(Blocks.sand, 4), getFurnace(ore, 8.0F), slag, 25);
-                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "dustPyrotheum", 2), getFurnace(ore, 8.0F), slag, 75);
-                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "crystalCinnabar", 2), getFurnace(ore, 16.0F), slag, 100);
-            }
-        }
-
-        private void addSmelter(ItemStack a, ItemStack b, ItemStack output, ItemStack altOutput, int prob) {
-            if (a == null || b == null || output == null)
-                return;
-
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("energy", 16000);
-            tag.setTag("primaryInput", getItemStackNBT(a));
-            tag.setTag("secondaryInput", getItemStackNBT(b));
-            tag.setTag("primaryOutput", getItemStackNBT(output));
-            if (altOutput != null) {
-                tag.setTag("secondaryOutput", getItemStackNBT(altOutput));
-                tag.setInteger("secondaryChance", prob);
-            }
-            FMLInterModComms.sendMessage("ThermalExpansion", "SmelterRecipe", tag);
-        }
-
-        private void addPulverizer(ItemStack input, ItemStack output) {
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("energy", 8000);
-            tag.setTag("input", getItemStackNBT(input));
-            tag.setTag("primaryOutput", getItemStackNBT(output, 4));
-            FMLInterModComms.sendMessage("ThermalExpansion", "PulverizerRecipe", tag);
-        }
-    }
-
-    public static ModInterface[] mods = {new VanillaFurnace(), new TE4Integration()};
-
     public static void addModIntegration() {
+        addModIntegration(mods);
+    }
+
+    public static void addModIntegration(ModInterface[] mods) {
         for (DenseOre ore : DenseOresRegistry.ores.values()) {
             int bId = ore.id / 16;
             int meta = ore.id % 16;
@@ -176,5 +113,14 @@ public class ModIntegration {
                 }
             }
         }
+    }
+
+    public static void addLateModIntegration() {
+        addModIntegration(lastMinutemods);
+    }
+
+    public static boolean simpleItemStackMatch(ItemStack originalOre, ItemStack stack) {
+        return stack.getItem() == originalOre.getItem()
+                && stack.getItemDamage() == originalOre.getItemDamage();
     }
 }

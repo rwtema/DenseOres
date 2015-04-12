@@ -1,17 +1,15 @@
 package com.rwtema.denseores;
 
-import java.io.File;
-
+import com.rwtema.denseores.modintegration.ModIntegration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.io.File;
 
 @Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION, dependencies = "after:*")
 public class DenseOresMod {
@@ -47,6 +45,16 @@ public class DenseOresMod {
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
         LogHelper.info("Dense Ores is fully loaded but sadly it cannot tell you the unlocalized name for dirt.");
+    }
+
+    boolean doneLastMinuteStuff = false;
+
+    @EventHandler
+    public void lastMinute(FMLServerAboutToStartEvent event){
+        if(!doneLastMinuteStuff){
+            doneLastMinuteStuff = true;
+            ModIntegration.addLateModIntegration();
+        }
     }
 
     @EventHandler
