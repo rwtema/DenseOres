@@ -2,7 +2,6 @@ package com.rwtema.denseores.modintegration;
 
 import com.rwtema.denseores.DenseOre;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.Optional.Method;
 import ic2.api.recipe.RecipeInputItemStack;
 import ic2.api.recipe.Recipes;
@@ -21,7 +20,7 @@ public class IC2Compat implements ModInterface {
 
     @Method(modid = "IC2")
     private void registerOre_do(DenseOre ore, ItemStack denseOre, ItemStack originalOre) {
-        if(Recipes.scrapboxDrops == null || Recipes.macerator == null)
+        if (Recipes.scrapboxDrops == null || Recipes.macerator == null)
             return;
 
         Map<ItemStack, Float> drops = Recipes.scrapboxDrops.getDrops();

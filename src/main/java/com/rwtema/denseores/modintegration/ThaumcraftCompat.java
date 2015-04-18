@@ -2,7 +2,7 @@ package com.rwtema.denseores.modintegration;
 
 import com.rwtema.denseores.DenseOre;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.Optional.Method;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
