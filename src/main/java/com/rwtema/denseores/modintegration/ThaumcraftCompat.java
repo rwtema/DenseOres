@@ -2,6 +2,7 @@ package com.rwtema.denseores.modintegration;
 
 import com.rwtema.denseores.DenseOre;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
@@ -11,7 +12,8 @@ import java.util.Map;
 
 public class ThaumcraftCompat implements ModInterface {
 
-    private static void registerOre_do(DenseOre ore, ItemStack denseOre, ItemStack originalOre) {
+    @Method(modid = "Thaumcraft")
+    private void registerOre_do(DenseOre ore, ItemStack denseOre, ItemStack originalOre) {
         AspectList aspectList = new AspectList(originalOre);
         if (aspectList.visSize() == 0)
             return;
