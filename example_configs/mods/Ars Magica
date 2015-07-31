@@ -1,0 +1,54 @@
+# Example Config File
+# Make sure to replace block_X with a proper number
+
+ores {
+    block_X {
+        S:baseBlock=arsmagica2:vinteumOre
+        I:baseBlockMeta=0
+        S:baseBlockTexture=arsmagica2:orevinteum
+        D:denseOreProbability=1
+        I:renderType=0
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+	
+	block_X {
+        S:baseBlock=arsmagica2:vinteumOre
+        I:baseBlockMeta=1
+        S:baseBlockTexture=arsmagica2:orechimerite
+        D:denseOreProbability=1
+        I:renderType=0
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+	
+	block_X {
+        S:baseBlock=arsmagica2:vinteumOre
+        I:baseBlockMeta=2
+        S:baseBlockTexture=arsmagica2:orebluetopaz
+        D:denseOreProbability=1
+        I:renderType=0
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+	
+	block_X {
+        S:baseBlock=arsmagica2:vinteumOre
+        I:baseBlockMeta=3
+        S:baseBlockTexture=arsmagica2:oremoonstone
+        D:denseOreProbability=1
+        I:renderType=0
+        I:retroGenID=1
+        S:underlyingBlock=stone
+    }
+	
+	block_X {
+        S:baseBlock=arsmagica2:vinteumOre
+        I:baseBlockMeta=4
+        S:baseBlockTexture=arsmagica2:oresunstone
+        D:denseOreProbability=1
+        I:renderType=0
+        I:retroGenID=1
+        S:underlyingBlock=obsidian
+    }
+}
