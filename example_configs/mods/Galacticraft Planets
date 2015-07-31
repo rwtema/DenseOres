@@ -13,7 +13,7 @@ ores {
         S:underlyingBlock=galacticraftmars:bottom
     }
 	
-	block_108 {
+	block_X {
         S:baseBlock=GalacticraftMars:tile.asteroidsBlock
         I:baseBlockMeta=3
         S:baseBlockTexture=galacticraftasteroids:oreAluminum
@@ -23,7 +23,7 @@ ores {
         S:underlyingBlock=galacticraftasteroids:asteroid0
     }
 	
-	block_109 {
+	block_X {
         S:baseBlock=GalacticraftMars:tile.asteroidsBlock
         I:baseBlockMeta=4
         S:baseBlockTexture=galacticraftasteroids:oreIlmenite
@@ -33,7 +33,7 @@ ores {
         S:underlyingBlock=galacticraftasteroids:asteroid0
     }
 	
-	block_110 {
+	block_X {
         S:baseBlock=GalacticraftMars:tile.asteroidsBlock
         I:baseBlockMeta=5
         S:baseBlockTexture=galacticraftasteroids:oreIron
