@@ -8,7 +8,7 @@ DenseOres by RWTema
 Code is provided without guarantee of being error-free or optimal.
 
 
-<br><b>Download of the latest release:</b> <a href="http://www.mediafire.com/download/pkav85stbss1roa/denseores-1.4.2.jar">Version 1.4.2</a><br><br>
+<br><b>Download of the latest release:</b> <a href="http://addons.curse.cursecdn.com/files/2234/692/denseores-1.6.2.jar">Version 1.6.2</a><br><br>
 
 
 If you wish to add another mods ores to the game, you will need to alter the config file. I generally wouldn't recommend doing this if you are a casual player since this can cause issues. It's best to see if there is a modpack that does it properly for you. There is a simple denseores.cfg that includes a number of ores from some common mods here <a href="https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg">https://github.com/rwtema/DenseOres/blob/master/example_configs/denseores.cfg</a><br>
@@ -16,7 +16,11 @@ If you wish to add another mods ores to the game, you will need to alter the con
 You can also find individual example configs for common mods at <a href="https://github.com/rwtema/DenseOres/tree/master/example_configs/mods">https://github.com/rwtema/DenseOres/tree/master/example_configs/mods</a>. This will require you to change the ore ids when you add them to your config file. If anyone wishes to add more example configs for common mods, then please feel free to submit a pull request for it.<br>
 
 
-<b>Older Versions:</b><br>
+<a href="http://www.curse.com/mc-mods/minecraft/224942-dense-ores#t1:other-downloads"><b>Older Versions:</b></a><br>
+<a href="http://addons.curse.cursecdn.com/files/2233/926/denseores-1.6.1.jar">Version 1.6.1</a><br>
+<a href="http://addons.curse.cursecdn.com/files/2233/888/denseores-1.6.jar">Version 1.6</a><br>
+
+<a href="http://addons.curse.cursecdn.com/files/2216/805/denseores-1.5.jar">Version 1.5</a><br>
 <a href="http://www.mediafire.com/download/leudza3jpd8uvd8/denseores-1.4.1.jar">Version 1.4.1</a><br>
 <a href="http://www.mediafire.com/download/ac7a4hb8cuzm6rb/denseores-1.4.jar">Dense Ores 1.4</a><br>
 <a href="http://www.mediafire.com/download/vcluluqcd8k0atp/denseores-1.3.jar">Dense Ores 1.3</a><br>
