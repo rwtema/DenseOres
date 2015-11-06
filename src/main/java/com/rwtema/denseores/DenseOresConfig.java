@@ -13,6 +13,9 @@ public class DenseOresConfig {
     public final static DenseOresConfig instance = new DenseOresConfig();
 
     public final static String CATEGORY_BLOCK = "ores.block_";
+    public final static String CATEGORY_WORLD_GENERATION = "world_generation";
+    
+    public final static Boolean WORLD_GENERATION_ENABLED;
 
     public void loadConfig(File file) {
 
@@ -57,7 +60,7 @@ public class DenseOresConfig {
                                 config.get(cat, "denseOreProbability", 1).getDouble(1),
                                 config.get(cat, "underlyingBlock", "stone").getString().trim(),
                                 config.get(cat, "baseBlockTexture", "").getString().trim(),
-                                config.get(cat, "retroGenID", 0).getInt(),
+                                config.get(cat, "retroGenId", 0).getInt(),
                                 config.get(cat, "renderType", 0).getInt(0));
                         if (denseOre != null) {
                             if (config.hasKey(cat, "underlyingBlockTexture")) {
@@ -77,6 +80,8 @@ public class DenseOresConfig {
                 } catch (NumberFormatException e) { // text after ore.block_ was
                     // not an integer
                 }
+            } else if (cat == CATEGORY_WORLD_GENERATION) {
+                this.WORLD_GENERATION_ENABLED = (config.get(cat, "enabled", true).getBoolean(true);
             }
         }
 
