@@ -57,7 +57,7 @@ public class DenseOresConfig {
                                 config.get(cat, "denseOreProbability", 1).getDouble(1),
                                 config.get(cat, "underlyingBlock", "stone").getString().trim(),
                                 config.get(cat, "baseBlockTexture", "").getString().trim(),
-                                config.get(cat, "retroGenID", 0).getInt(),
+                                config.get(cat, "retroGenId", 0).getInt(),
                                 config.get(cat, "renderType", 0).getInt(0));
                         if (denseOre != null) {
                             if (config.hasKey(cat, "underlyingBlockTexture")) {
