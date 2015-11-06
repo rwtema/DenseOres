@@ -81,7 +81,7 @@ public class DenseOresConfig {
                     // not an integer
                 }
             } else if (cat == CATEGORY_WORLD_GENERATION) {
-                this.WORLD_GENERATION_ENABLED = (config.get(cat, "enabled", true).getBoolean(true);
+                this.WORLD_GENERATION_ENABLED = config.get(cat, "enabled", true).getBoolean(true);
             }
         }
 
