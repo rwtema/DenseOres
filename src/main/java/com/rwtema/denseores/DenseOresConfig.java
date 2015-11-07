@@ -13,12 +13,17 @@ public class DenseOresConfig {
     public final static DenseOresConfig instance = new DenseOresConfig();
 
     public final static String CATEGORY_BLOCK = "ores.block_";
+    public final static String CATEGORY_WORLD_GENERATION = "world_generation";
+
+    public Boolean WORLD_GENERATION_ENABLED;
 
     public void loadConfig(File file) {
 
         Configuration config = new Configuration(file);
 
         config.load();
+
+        this.WORLD_GENERATION_ENABLED = config.get(CATEGORY_WORLD_GENERATION, "enabled", true).getBoolean(true);
 
         DenseOresRegistry.initVanillaOres();
 

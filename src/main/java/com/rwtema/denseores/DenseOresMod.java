@@ -18,7 +18,7 @@ public class DenseOresMod {
 
     @SidedProxy(serverSide = "com.rwtema.denseores.Proxy", clientSide = "com.rwtema.denseores.ProxyClient")
     public static Proxy proxy;
-    
+
     private File config;
 
     @EventHandler
@@ -32,13 +32,15 @@ public class DenseOresMod {
     	LogHelper.info("Ph'nglui mglw'nafh, y'uln Dense Ores shugg ch'agl");
         DenseOresConfig.instance.loadConfig(config);
         DenseOresRegistry.buildBlocks();
-    	
+
         DenseOresRegistry.buildOreDictionary();
         ModIntegration.addModIntegration();
 
-        WorldGenOres worldGen = new WorldGenOres();
-        GameRegistry.registerWorldGenerator(worldGen, 1000);
-        MinecraftForge.EVENT_BUS.register(worldGen);
+        if (DenseOresConfig.instance.WORLD_GENERATION_ENABLED) {
+            WorldGenOres worldGen = new WorldGenOres();
+            GameRegistry.registerWorldGenerator(worldGen, 1000);
+            MinecraftForge.EVENT_BUS.register(worldGen);
+        }
     }
 
     @EventHandler
