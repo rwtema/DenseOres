@@ -14,14 +14,16 @@ public class DenseOresConfig {
 
     public final static String CATEGORY_BLOCK = "ores.block_";
     public final static String CATEGORY_WORLD_GENERATION = "world_generation";
-    
-    public final static Boolean WORLD_GENERATION_ENABLED;
+
+    public Boolean WORLD_GENERATION_ENABLED;
 
     public void loadConfig(File file) {
 
         Configuration config = new Configuration(file);
 
         config.load();
+
+        this.WORLD_GENERATION_ENABLED = config.get(CATEGORY_WORLD_GENERATION, "enabled", true).getBoolean(true);
 
         DenseOresRegistry.initVanillaOres();
 
@@ -80,8 +82,6 @@ public class DenseOresConfig {
                 } catch (NumberFormatException e) { // text after ore.block_ was
                     // not an integer
                 }
-            } else if (cat == CATEGORY_WORLD_GENERATION) {
-                this.WORLD_GENERATION_ENABLED = config.get(cat, "enabled", true).getBoolean(true);
             }
         }
 
