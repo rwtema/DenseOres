@@ -1,5 +1,7 @@
-package com.rwtema.denseores;
+package com.rwtema.denseores.blocks;
 
+import com.rwtema.denseores.blocks.BlockDenseOre;
+import com.rwtema.denseores.blockstates.OreType;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -10,14 +12,10 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class ItemBlockDenseOre extends ItemBlock {
-    public static ItemBlockDenseOre INSTANCE;
     BlockDenseOre oreBlock;
 
-    // construct an itemblock for the given block. (Note: no itemid!)
     public ItemBlockDenseOre(Block block) {
         super(block);
-        INSTANCE = this;
-        // oreBlock should always be a BlockDenseOre
         oreBlock = (BlockDenseOre) block;
         this.setHasSubtypes(true);
     }
@@ -27,21 +25,21 @@ public class ItemBlockDenseOre extends ItemBlock {
     }
 
     // Adds the 'dense' qualifier to the base blocks name
-    public String getItemStackDisplayName(ItemStack par1ItemStack) {
-        int m = par1ItemStack.getItemDamage() & 15;
-        if (!oreBlock.isValid(m))
+    public String getItemStackDisplayName(ItemStack stack) {
+        OreType oreType = OreType.get(stack.getItemDamage());
+        if (!oreBlock.isValid())
             return "Invalid Ore";
         else {
-            ItemStack temp = new ItemStack(oreBlock.getBlock(m), 1, oreBlock.entry[m].metadata);
+            ItemStack temp = new ItemStack(oreBlock.getBlock(), 1, oreBlock.denseOre.metadata);
 
-            String p = ("" + StatCollector.translateToLocal("denseores.prefix")).trim();
+            String p = ("" + StatCollector.translateToLocal("denseores." + oreType.getName() + ".prefix")).trim();
             return p.replaceFirst("ORENAME", temp.getDisplayName());
         }
     }
 
     @Override
     public boolean hasCustomEntity(ItemStack stack) {
-        return !oreBlock.isValid(stack.getItemDamage());
+        return !oreBlock.isValid();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.rwtema.denseores;
 
 
+import com.rwtema.denseores.commands.CommandClientOutputTextures;
+import com.rwtema.denseores.commands.CommandClientIdentifyBlock;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -9,7 +11,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ProxyClient extends Proxy {
     @Override
     public void postInit() {
-//        ClientCommandHandler.instance.registerCommand(new CommandIdentifyBlock());
+        super.postInit();
         ClientCommandHandler.instance.registerCommand(new CommandClientOutputTextures());
+        ClientCommandHandler.instance.registerCommand(new CommandClientIdentifyBlock());
     }
 }

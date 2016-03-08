@@ -1,7 +1,9 @@
 package com.rwtema.denseores;
 
-import net.minecraft.block.Block;
+import com.rwtema.denseores.blockstates.OreType;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -11,6 +13,7 @@ import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Map;
 import java.util.Random;
 
 public class WorldGenOres implements IWorldGenerator {
@@ -20,61 +23,58 @@ public class WorldGenOres implements IWorldGenerator {
     // generates blocks in the world
     private static Random rand = new Random();
 
+    public static boolean overrideChunkBlock(Chunk chunk, BlockPos pos, IBlockState state, boolean retroGen) {
+        if (!retroGen) {
+            return chunk.getWorld().setBlockState(pos, state);
+        }
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+
+        IBlockState oldState = chunk.getBlockState(pos);
+        if (oldState == state || y < 0) {
+            return false;
+        } else {
+            ExtendedBlockStorage[] storageArray = chunk.getBlockStorageArray();
+            ExtendedBlockStorage extendedblockstorage = storageArray[y >> 4];
+
+            if (extendedblockstorage == null) {
+                extendedblockstorage = storageArray[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !chunk.getWorld().provider.getHasNoSky());
+            }
+
+            extendedblockstorage.set(x & 15, y & 15, z & 15, state);
+
+            if (oldState.getBlock().hasTileEntity(oldState)) {
+                Map<BlockPos, TileEntity> map = chunk.getTileEntityMap();
+                TileEntity te = map.remove(pos);
+                if (te != null) {
+                    te.invalidate(); //urk hopefully this doesn't explode anything
+                }
+            }
+
+
+            return extendedblockstorage.getBlockByExtId(x & 15, y & 15, z & 15) == state;
+        }
+    }
+
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
 
-        BlockDenseOre dense_ore_blocks = DenseOresMod.block;
-        for (int id = 0; id < dense_ore_blocks.maxMetdata; id++) {
-            if (dense_ore_blocks.isValid(id)) {
-                genChunk(chunk, random, dense_ore_blocks, id);
-            }
-
+        for (DenseOre denseOre : DenseOresRegistry.ores.values()) {
+            genChunk(chunk, random, denseOre, false);
         }
     }
 
-    public void genChunk(Chunk chunk, Random random, BlockDenseOre dense_ore_blocks, int id) {
-        for (int i = 0; i < 1000; i++) {
-            int x = random.nextInt(dense_ore_blocks.maxMetdata);
-            int y = 1 + random.nextInt(80);
-            int z = random.nextInt(dense_ore_blocks.maxMetdata);
+    static final OreType[] generate_order = new OreType[]{
+            OreType.DEPOSIT,
+            OreType.SPARSE,
+            OreType.DENSE
 
-            Block block = chunk.getBlock(x, y, z);
+    };
 
-            if (block == dense_ore_blocks.getBlock(id) && chunk.getBlockMetadata(new BlockPos(x, y, z)) == dense_ore_blocks.entry[id].metadata)
-                overrideChunkBlock(chunk, x, y, z, dense_ore_blocks, id);
-        }
-    }
-
-    // it seems that if an ore has a tile entity it crashes during retrogen
-    // so here's a custom method that doesn't cause issues with overwriting blocks.
-    // I wouldn't recommend copying this method though.
-    public boolean overrideChunkBlock(Chunk chunk, int x, int y, int z, BlockDenseOre dense_ore_blocks, int id) {
-        int i1 = z << 4 | x;
-
-        Block block1 = chunk.getBlock(x, y, z);
-        int k1 = chunk.getBlockMetadata(new BlockPos(x, y, z));
-
-        if (block1 == dense_ore_blocks && k1 == id) {
-            return false;
-        } else {
-            ExtendedBlockStorage extendedblockstorage = chunk.getBlockStorageArray()[y >> 4];
-
-            if (extendedblockstorage == null)
-                return false;   //should never happen as we are replacing an existing block
-
-//            extendedblockstorage.func_150818_a(x, y & 15, z, dense_ore_blocks);
-//            extendedblockstorage.setExtBlockMetadata(x, y & 15, z, id);
-
-//            if (block1.hasTileEntity(k1)) {
-//                TileEntity te = chunk.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
-//                if (te != null) {
-//                    ChunkPosition chunkposition = new ChunkPosition(x & 0x0F, y, z & 0x0F);
-//                    te = (TileEntity) chunk.chunkTileEntityMap.remove(chunkposition);
-//                    te.invalidate(); //urk hopefully this doesn't explode anything
-//                }
-//            }
-
-            return extendedblockstorage.getBlockByExtId(x, y & 15, z) == dense_ore_blocks;
+    public void genChunk(Chunk chunk, Random random, DenseOre denseOre, boolean retroGen) {
+        for (OreType oreType : generate_order) {
+            oreType.generate(chunk, random, denseOre, retroGen);
         }
     }
 
@@ -92,14 +92,10 @@ public class WorldGenOres implements IWorldGenerator {
         long chunkSeed = (xSeed * event.getChunk().xPosition + zSeed * event.getChunk().zPosition) ^ worldSeed;
         rand.setSeed(chunkSeed);
 
-        BlockDenseOre dense_ore_blocks = DenseOresMod.block;
-        NBTTagCompound b = rgen.getCompoundTag(dense_ore_blocks.getUnlocalizedName());
-        for (int id = 0; id < dense_ore_blocks.maxMetdata; id++) {
-            if (dense_ore_blocks.isValid(id)) {
-                if (dense_ore_blocks.getEntry(id).retroGenId != b.getInteger(id + "")) {
-                    genChunk(event.getChunk(), rand, dense_ore_blocks, id);
-                    regen = true;
-                }
+        for (DenseOre denseOre : DenseOresRegistry.ores.values()) {
+            if (!rgen.hasKey(denseOre.name) || denseOre.retroGenId != rgen.getInteger(denseOre.name)) {
+                genChunk(event.getChunk(), rand, denseOre, true);
+                regen = true;
             }
         }
 
@@ -113,14 +109,9 @@ public class WorldGenOres implements IWorldGenerator {
         NBTTagCompound chunkData = event.getData();
         NBTTagCompound rgen = chunkData.getCompoundTag(DENSEORES);
 
-        BlockDenseOre dense_ore_blocks = DenseOresMod.block;
-        NBTTagCompound b = rgen.getCompoundTag(dense_ore_blocks.getUnlocalizedName());
-        for (int id = 0; id < dense_ore_blocks.maxMetdata; id++) {
-            if (dense_ore_blocks.isValid(id)) {
-                b.setInteger(id + "", dense_ore_blocks.getEntry(id).retroGenId);
-            }
+        for (DenseOre denseOre : DenseOresRegistry.ores.values()) {
+            rgen.setInteger(denseOre.name, denseOre.retroGenId);
         }
-        rgen.setTag(dense_ore_blocks.getUnlocalizedName(), b);
 
         chunkData.setTag(DENSEORES, rgen);
     }

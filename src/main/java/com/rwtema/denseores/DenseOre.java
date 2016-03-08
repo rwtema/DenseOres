@@ -1,9 +1,20 @@
 package com.rwtema.denseores;
 
+import com.rwtema.denseores.blocks.BlockDenseOre;
+import com.rwtema.denseores.blocks.ItemBlockDenseOre;
+import com.rwtema.denseores.blockstates.OreType;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.EnumMap;
 
 /*
  * Dense ore entry
@@ -11,49 +22,48 @@ import net.minecraft.util.ResourceLocation;
  * holds data for when we need it
  */
 public class DenseOre {
+    public final String name;
+
     public int rendertype;
     public String baseBlock;
-    public String modOwner;
     public int metadata;
-    public double prob;
-    public String underlyingBlock;
-    public String underlyingBlocktexture;
+    public String underlyingBlockTexture;
     public String texture;
-    public String[] textureOverlays;
-    public int id;
+
     public int retroGenId;
-    public String baseOreDictionary = "";
-    public String oreDictionary = "";
-    BlockDenseOre block;
+
+
+    public BlockDenseOre block;
+    public ItemBlockDenseOre itemBlock;
+
     boolean initSmelt = false;
     private ItemStack smelt;
 
-    public DenseOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId, int renderType) {
-        this.id = id;
+    @SideOnly(Side.CLIENT)
+    public EnumMap<OreType, TextureAtlasSprite> sprites;
+    public String baseOreDictionaryEntry;
+
+
+    public DenseOre(String name, String baseBlock, int metadata, String underlyingBlock, String texture, int retroGenId, int renderType) {
+        this.name = name;
         this.baseBlock = baseBlock;
         this.metadata = metadata;
-        this.prob = prob;
-        this.underlyingBlock = underlyingBlock;
-        this.underlyingBlocktexture = underlyingBlock;
+        this.underlyingBlockTexture = underlyingBlock;
         this.texture = texture;
         this.retroGenId = retroGenId;
-        this.modOwner = baseBlock.substring(0, baseBlock.indexOf(58));
-        this.textureOverlays = textureOverlays;
-        this.rendertype = renderType;
-    }
 
-    public BlockDenseOre getBlock() {
-        return block;
+        this.rendertype = renderType;
     }
 
     public void setBlock(BlockDenseOre block) {
         this.block = block;
+        itemBlock = (ItemBlockDenseOre) Item.getItemFromBlock(block);
     }
 
     public Block getBaseBlock() {
         if (Block.blockRegistry.containsKey(new ResourceLocation(baseBlock)))
             return Block.getBlockFromName(baseBlock);
-        return null;
+        return Blocks.air;
     }
 
     public ItemStack newStack(int stacksize) {
@@ -79,5 +89,9 @@ public class DenseOre {
         smelt = out;
 
         return out;
+    }
+
+    public IBlockState getBaseState() {
+        return block.getBaseBlockState();
     }
 }

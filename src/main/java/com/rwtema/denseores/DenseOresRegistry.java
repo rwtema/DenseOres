@@ -1,6 +1,8 @@
 package com.rwtema.denseores;
 
-import net.minecraft.block.Block;
+import com.rwtema.denseores.blocks.BlockDenseOre;
+import com.rwtema.denseores.blocks.ItemBlockDenseOre;
+import com.rwtema.denseores.blockstates.OreType;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -11,44 +13,34 @@ import java.util.Map;
 
 public class DenseOresRegistry {
 
-    public static Map<Integer, DenseOre> ores = new HashMap<Integer, DenseOre>();
+    public static Map<String, DenseOre> ores = new HashMap<String, DenseOre>();
     public static String blockPrefix = DenseOresMod.MODID;
 
     // add vanilla entries (TODO: add a way to disable vanilla ores)
     public static void initVanillaOres() {
-        registerOre(0, "minecraft:iron_ore", 0, 1, "stone", "iron_ore", 0, 0);
-        registerOre(1, "minecraft:gold_ore", 0, 1, "stone", "gold_ore", 0, 0);
-        registerOre(2, "minecraft:lapis_ore", 0, 1, "stone", "lapis_ore", 0, 0);
-        registerOre(3, "minecraft:diamond_ore", 0, 1, "stone", "diamond_ore", 0, 0);
-        registerOre(4, "minecraft:emerald_ore", 0, 1, "stone", "emerald_ore", 0, 0);
-        registerOre(5, "minecraft:redstone_ore", 0, 1, "stone", "redstone_ore", 0, 0);
-        registerOre(6, "minecraft:coal_ore", 0, 1, "stone", "coal_ore", 0, 0);
-        registerOre(7, "minecraft:quartz_ore", 0, 1, "netherrack", "quartz_ore", 0, 0);
+        registerOre("mc_iron", "minecraft:iron_ore", 0, "blocks/stone", "blocks/iron_ore", 0, 0);
+        registerOre("mc_gold", "minecraft:gold_ore", 0, "blocks/stone", "blocks/gold_ore", 0, 0);
+        registerOre("mc_lapis", "minecraft:lapis_ore", 0, "blocks/stone", "blocks/lapis_ore", 0, 0);
+        registerOre("mc_diamond", "minecraft:diamond_ore", 0, "blocks/stone", "blocks/diamond_ore", 0, 0);
+        registerOre("mc_emerald", "minecraft:emerald_ore", 0, "blocks/stone", "blocks/emerald_ore", 0, 0);
+        registerOre("mc_redstone", "minecraft:redstone_ore", 0, "blocks/stone", "blocks/redstone_ore", 0, 0);
+        registerOre("mc_coal", "minecraft:coal_ore", 0, "blocks/stone", "blocks/coal_ore", 0, 0);
+        registerOre("mc_quartz", "minecraft:quartz_ore", 0, "blocks/netherrack", "blocks/quartz_ore", 0, 0);
     }
 
     // create the blocks needed
     public static void buildBlocks() {
-        int maxOre = 0;
         for (DenseOre ore : ores.values()) {
-            maxOre = Math.max(ore.id, maxOre);
-        }
-
-        BlockDenseOre.maxMetdata = maxOre + 1;
-        DenseOresMod.block = new BlockDenseOre();
-
-        GameRegistry.registerBlock(DenseOresMod.block, ItemBlockDenseOre.class, "blockDenseOre");
-
-        for (DenseOre ore : ores.values()) {
-            DenseOresMod.block.setEntry(ore.id, ore);
-            ore.setBlock(DenseOresMod.block);
+            BlockDenseOre block = new BlockDenseOre(ore);
+            GameRegistry.registerBlock(block, ItemBlockDenseOre.class, ore.name);
+            ore.setBlock(block);
         }
     }
 
-    public static DenseOre registerOre(int id, String baseBlock, int metadata, double prob, String underlyingBlock, String texture, int retroGenId, int renderType) {
+    public static DenseOre registerOre(String name, String baseBlock, int metadata, String underlyingBlock, String texture, int retroGenId, int renderType) {
 
         if ("".equals(baseBlock) || "minecraft:air".equals(baseBlock))
             return null;
-
 
         int ind = baseBlock.indexOf(58);
 
@@ -57,34 +49,36 @@ public class DenseOresRegistry {
             if (!"minecraft".equals(modname) && !Loader.isModLoaded(modname))
                 return null;
         } else {
-            throw new RuntimeException("Block " + id + " is not formatted correctly. Must be in the form mod:block");
+            throw new RuntimeException("Block " + name + " is not formatted correctly. Must be in the form mod:block");
         }
 
-        final DenseOre ore = new DenseOre(id, baseBlock, metadata, prob, underlyingBlock, texture, retroGenId, renderType);
-        ores.put(id, ore);
+        DenseOre ore = new DenseOre(name, baseBlock, metadata, underlyingBlock, texture, retroGenId, renderType);
+        ores.put(name, ore);
         return ore;
     }
 
-    public static boolean hasEntry(int id) {
+    public static boolean hasEntry(String id) {
         return ores.containsKey(id);
     }
 
     //Look for valid ore dictionary references and add new ones
     public static void buildOreDictionary() {
         for (DenseOre ore : ores.values()) {
-            int meta = ore.id;
-            if (DenseOresMod.block.isValid(meta)) {
-                Block b = DenseOresMod.block.getBlock(meta);
-                for (int oreid : OreDictionary.getOreIDs(new ItemStack(b, 1, ore.metadata))) {
-                    String k = OreDictionary.getOreName(oreid);
-                    if (k.startsWith("ore")) {
-                        ore.baseOreDictionary = k;
-                        k = "dense" + k;
-                        ore.oreDictionary = k;
-                        OreDictionary.registerOre(k, new ItemStack(DenseOresMod.block, 1, meta));
+
+            if (ore.block.isValid()) {
+                for (int oreid : OreDictionary.getOreIDs(new ItemStack(ore.block.getBlock(), 1, ore.metadata))) {
+                    String oreName = OreDictionary.getOreName(oreid);
+
+                    if (oreName.length() > 3 && oreName.startsWith("ore") && Character.isUpperCase(oreName.charAt(3))) {
+                        ore.baseOreDictionaryEntry = oreName;
+                        for (OreType type : OreType.values()) {
+                            type.registerOre(ore, oreName);
+                        }
+
                     }
                 }
             }
         }
     }
+
 }

@@ -1,5 +1,6 @@
-package com.rwtema.denseores;
+package com.rwtema.denseores.utils;
 
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +12,7 @@ public class LogHelper {
 
     static {
         try {
-            World.class.getMethod("getBlock", int.class, int.class, int.class);
+            World.class.getMethod("getBlockState", BlockPos.class);
             isDeObf = true;
         } catch (Throwable ex) {
             isDeObf = false;

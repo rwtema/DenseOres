@@ -1,4 +1,7 @@
-denseores.prefix=Dense ORENAME
+denseores.dense.prefix=Dense ORENAME
+denseores.sparse.prefix=Sparse ORENAME
+denseores.deposit.prefix=Deposit of ORENAME
+denseores.deposit.num=%s Uses Remaining
 denseores.command.help=Outputs the current generated textures to the 'denseoretextures' folder.
 denseores.commandIdentify.help=Identifies the block's registry name and it's texture
 denseores.commandIdentify.invalid=Currently held item is not a block
@@ -6,3 +9,5 @@ denseores.commandIdentify.invalidtexture=Unable to find valid texture
 denseores.commandIdentify.multipleTextures=There are multiple textures available for S:baseBlockTexture
 denseores.commandIdentify.start=-= Analyzing Item: %s =-
 denseores.commandIdentify.obligitarydisclaimer=Disclaimer: These values are not guaranteed to be accurate
+denseores.commandFindDeposits.lastPos=Last %s generated ore deposit locations
+denseores.commandFindDeposits.noPos=No ore deposits have been generated recently

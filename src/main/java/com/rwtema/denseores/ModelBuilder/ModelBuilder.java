@@ -12,7 +12,8 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.IFlexibleBakedModel;
+import net.minecraftforge.client.model.IPerspectiveAwareModel;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -87,8 +88,9 @@ public class ModelBuilder {
     }
 
     // Creates a copy of the baked model with a given texture overlayed on the sides
-    public static SimpleBakedModel changeIcon(IBakedModel model, TextureAtlasSprite texture) {
+    public static IBakedModel changeIcon(IBakedModel model, TextureAtlasSprite texture) {
         SimpleBakedModel bakedModel = new SimpleBakedModel(new LinkedList(), newBlankFacingLists(), model.isGui3d(), model.isAmbientOcclusion(), texture, model.getItemCameraTransforms());
+
 
         for (Object o : model.getGeneralQuads()) {
             bakedModel.getGeneralQuads().add(changeTexture((BakedQuad) o, texture));
@@ -100,14 +102,22 @@ public class ModelBuilder {
             }
         }
 
-        return bakedModel;
+        IBakedModel result = bakedModel;
+
+        if (model instanceof IPerspectiveAwareModel) {
+            result = new PerspectiveWrapper(result, (IPerspectiveAwareModel) model);
+        } else if (model instanceof IFlexibleBakedModel) {
+            result = new IFlexibleBakedModel.Wrapper(bakedModel, ((IFlexibleBakedModel) model).getFormat());
+        }
+
+        return result;
     }
 
     // creates blank lists
     public static List newBlankFacingLists() {
         Object[] list = new Object[EnumFacing.values().length];
         for (int i = 0; i < EnumFacing.values().length; ++i) {
-            list[i] = Lists.newLinkedList();
+            list[i] = Lists.newArrayList();
         }
 
         return ImmutableList.copyOf(list);
@@ -120,7 +130,7 @@ public class ModelBuilder {
         if (models.length == 0) throw new IllegalArgumentException("Number of models must be > 0");
 
         IBakedModel m = models[0];
-        SimpleBakedModel simpleBakedModel = new SimpleBakedModel(new LinkedList(), newBlankFacingLists(), m.isGui3d(), m.isAmbientOcclusion(), m.getTexture(), m.getItemCameraTransforms());
+        SimpleBakedModel simpleBakedModel = new SimpleBakedModel(new LinkedList(), newBlankFacingLists(), m.isGui3d(), m.isAmbientOcclusion(), m.getParticleTexture(), m.getItemCameraTransforms());
 
         for (IBakedModel model : models) {
             simpleBakedModel.getGeneralQuads().addAll(model.getGeneralQuads());
@@ -135,6 +145,6 @@ public class ModelBuilder {
     // Get the default model resource location for a block state
     // Used to put an entry into the model registry
     public static ModelResourceLocation getModelResourceLocation(IBlockState state) {
-        return new ModelResourceLocation((ResourceLocation) Block.blockRegistry.getNameForObject(state.getBlock()), (new DefaultStateMapper()).getPropertyString(state.getProperties()));
+        return new ModelResourceLocation(Block.blockRegistry.getNameForObject(state.getBlock()), (new DefaultStateMapper()).getPropertyString(state.getProperties()));
     }
 }
