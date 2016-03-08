@@ -1,0 +1,8 @@
+denseores.prefix=ORENAME dense
+denseores.command.help=Exporte les textures générées actuelles dans le dossier 'denseoretextures'.
+denseores.commandIdentify.help=Identifie le nom de registre du bloc et sa texture
+denseores.commandIdentify.invalid=L'objet tenu actuellement n'est pas un bloc
+denseores.commandIdentify.invalidtexture=Impossible de trouver une texture valide
+denseores.commandIdentify.multipleTextures=Il y a plusieurs textures disponibles pour S:baseBlockTexture
+denseores.commandIdentify.start=-= Analyse de l'objet : %s =-
+denseores.commandIdentify.obligitarydisclaimer=Disclaimer : ces valeurs ne sont pas garanties d'être exactes
