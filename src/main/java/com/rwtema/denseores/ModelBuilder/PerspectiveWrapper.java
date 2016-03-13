@@ -1,4 +1,4 @@
-package com.rwtema.denseores.ModelBuilder;
+package com.rwtema.denseores.modelbuilder;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
