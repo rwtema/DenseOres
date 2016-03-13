@@ -1,4 +1,4 @@
-package com.rwtema.denseores.ModelBuilder;
+package com.rwtema.denseores.modelbuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
