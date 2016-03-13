@@ -16,10 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.*;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -240,7 +237,10 @@ public enum OreType implements IStringSerializable {
     DEPOSIT {
         @Override
         public float transfromHardness(DenseOre denseOre, OreType type, World world, BlockPos pos, TileEntity tile, float blockHardness) {
-            return blockHardness;
+            if(tile instanceof TileDepositLevel){
+                return blockHardness * MathHelper.sqrt_float(((TileDepositLevel) tile).num);
+            }
+            return blockHardness * 8;
         }
 
         @Override
@@ -346,6 +346,7 @@ public enum OreType implements IStringSerializable {
 
         @Override
         public void generate(Chunk chunk, Random random, DenseOre denseOre, boolean retroGen) {
+            if(random.nextInt(32) != 0) return;
             for (int dv = 0; dv < 1; dv++) {
                 IBlockState oreState = denseOre.getBaseState();
                 int x = (chunk.xPosition << 4) | (random.nextInt(16));
@@ -522,6 +523,7 @@ public enum OreType implements IStringSerializable {
     };
 
     public final String name = name().toLowerCase();
+    public boolean generate;
 
     public static OreType get(int meta) {
         for (OreType oreType : values()) {
@@ -627,4 +629,6 @@ public enum OreType implements IStringSerializable {
     }
 
     public static final LinkedList<BlockPos> deposit_positions = new LinkedList<BlockPos>();
+
+    public boolean enabled;
 }

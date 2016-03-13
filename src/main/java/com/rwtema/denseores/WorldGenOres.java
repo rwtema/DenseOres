@@ -74,7 +74,9 @@ public class WorldGenOres implements IWorldGenerator {
 
     public void genChunk(Chunk chunk, Random random, DenseOre denseOre, boolean retroGen) {
         for (OreType oreType : generate_order) {
-            oreType.generate(chunk, random, denseOre, retroGen);
+            if(oreType.generate) {
+                oreType.generate(chunk, random, denseOre, retroGen);
+            }
         }
     }
 

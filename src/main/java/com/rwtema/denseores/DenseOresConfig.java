@@ -1,6 +1,7 @@
 package com.rwtema.denseores;
 
 
+import com.rwtema.denseores.blockstates.OreType;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 
@@ -58,7 +59,12 @@ public class DenseOresConfig {
             }
         }
 
-        config.save();
+        for (OreType type : OreType.values()) {
+            String name = type.getName();
+            type.enabled = config.get("General", "enable" + name, true).getBoolean();
+            type.generate = config.get("General", "generate" + name, true).getBoolean() && type.enabled;
+        }
 
+        config.save();
     }
 }

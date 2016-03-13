@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -39,7 +40,7 @@ public class ItemBlockDenseOre extends ItemBlock {
 
     @Override
     public boolean hasCustomEntity(ItemStack stack) {
-        return !oreBlock.isValid();
+        return !oreBlock.isValid() || !OreType.get(stack.getItemDamage()).enabled;
     }
 
     @Override
@@ -47,4 +48,5 @@ public class ItemBlockDenseOre extends ItemBlock {
         return new EntityItem(world, location.posX, location.posY, location.posZ,
                 new ItemStack(oreBlock.getNullOverride(world, new BlockPos(location)), itemstack.stackSize));
     }
+
 }
