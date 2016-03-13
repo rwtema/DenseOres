@@ -16,7 +16,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "2.0.0"
+version = "2.0.1"
 group= "com.rwtema.denseores" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "denseores-1.8-alpha"
 
