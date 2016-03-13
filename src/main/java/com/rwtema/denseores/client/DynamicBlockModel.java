@@ -1,8 +1,7 @@
 package com.rwtema.denseores.client;
 
 import com.rwtema.denseores.DenseOre;
-import com.rwtema.denseores.ModelBuilder.ModelBuilder;
-import com.rwtema.denseores.blockaccess.BlockAccessDelegate;
+import com.rwtema.denseores.modelbuilder.ModelBuilder;
 import com.rwtema.denseores.blockaccess.BlockAccessSingleOverride;
 import com.rwtema.denseores.blockstates.DenseOreBlockState;
 import com.rwtema.denseores.blockstates.OreType;
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
