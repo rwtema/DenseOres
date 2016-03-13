@@ -13,11 +13,13 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -174,9 +176,7 @@ public class BlockDenseOre extends BlockOre {
             for (int i = 0; i < OreType.values().length; i++) {
                 list.add(new ItemStack(item, 1, i));
             }
-
         }
-
     }
 
     // drop the block with a predefined chance
@@ -351,4 +351,36 @@ public class BlockDenseOre extends BlockOre {
         IBlockState baseState = getBaseBlockState();
         return baseState.getBlock().getHarvestTool(baseState);
     }
+
+
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te)
+    {
+        player.triggerAchievement(StatList.mineBlockStatArray[getIdFromBlock(this)]);
+        player.addExhaustion(0.025F);
+
+        if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getSilkTouchModifier(player))
+        {
+            java.util.ArrayList<ItemStack> items = new java.util.ArrayList<ItemStack>();
+            ItemStack itemstack = this.createStackedBlock(state);
+
+            if (itemstack != null)
+            {
+                items.add(itemstack);
+            }
+
+            net.minecraftforge.event.ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, worldIn.getBlockState(pos), 0, 1.0f, true, player);
+            for (ItemStack stack : items)
+            {
+                spawnAsEntity(worldIn, pos, stack);
+            }
+        }
+        else
+        {
+            harvesters.set(player);
+            int i = EnchantmentHelper.getFortuneModifier(player);
+            this.dropBlockAsItem(worldIn, pos, state, i);
+            harvesters.set(null);
+        }
+    }
+
 }
