@@ -220,7 +220,7 @@ public class TextureOre extends TextureAtlasSprite {
             throw new RuntimeException(e);
         }
 
-        LogHelper.info("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
+        LogHelper.trace("Dense Ores: Succesfully generated dense ore texture for '" + name + "' with background '" + base + "'. Place " + name + "_dense.png in the assets folder to override.");
         return false;
     }
 }

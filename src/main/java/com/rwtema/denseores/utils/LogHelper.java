@@ -50,4 +50,12 @@ public class LogHelper {
         if (o == null) info(null);
         else info(o.getClass().getSimpleName() + " " + o.toString());
     }
+
+    public static void warn(String s) {
+        logger.warn(s);
+    }
+
+    public static void trace(String s) {
+        logger.trace(s);
+    }
 }
