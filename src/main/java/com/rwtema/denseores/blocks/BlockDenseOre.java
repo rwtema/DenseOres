@@ -3,10 +3,12 @@ package com.rwtema.denseores.blocks;
 
 import com.google.common.base.Throwables;
 import com.rwtema.denseores.DenseOre;
+import com.rwtema.denseores.DenseOresMod;
+import com.rwtema.denseores.Proxy;
 import com.rwtema.denseores.blockaccess.BlockAccessSingleOverride;
-import com.rwtema.denseores.blockstates.DenseOreBlockState;
 import com.rwtema.denseores.blockstates.DenseOreBlockStateCreator;
 import com.rwtema.denseores.blockstates.OreType;
+import com.rwtema.denseores.utils.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.properties.PropertyEnum;
@@ -304,9 +306,8 @@ public class BlockDenseOre extends BlockOre {
 
 
     @Override
-    @SideOnly(Side.CLIENT)
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        ((DenseOreBlockState) state).model.handleState(getBaseBlockState(), state, worldIn, pos);
+        DenseOresMod.proxy.loadModel(this, state, worldIn, pos);
         return state;
     }
 
