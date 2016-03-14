@@ -329,9 +329,12 @@ public class BlockDenseOre extends BlockOre {
 
     @Override
     public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-
-
-        return world.getBlockState(pos).getValue(ORE_TYPE).removedByPlayer(world, pos, this, player, willHarvest);
+        IBlockState blockState = world.getBlockState(pos);
+        if(blockState.getBlock() != this){
+            LogHelper.warn("Invalid IBlockState found (" + blockState + ") at " + pos);
+            return super.removedByPlayer(world, pos, player, willHarvest);
+        }
+        return blockState.getValue(ORE_TYPE).removedByPlayer(world, pos, this, player, willHarvest);
     }
 
     @Override
