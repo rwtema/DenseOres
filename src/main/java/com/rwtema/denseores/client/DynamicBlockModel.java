@@ -53,8 +53,7 @@ public class DynamicBlockModel extends EmptyBakedModel implements ISmartBlockMod
     @Override
     public IBakedModel handleItemState(ItemStack stack) {
         IBakedModel itemModel = itemModelMesher.getItemModel(denseOre.newStack(1));
-        IBakedModel iBakedModel = ModelBuilder.changeIcon(itemModel, denseOre.sprites.get(type));
-        return iBakedModel;
+        return ModelBuilder.changeIcon(itemModel, denseOre.sprites.get(type));
     }
 
     public void handleState(IBlockState baseBlockState, IBlockState state, IBlockAccess worldIn, BlockPos pos) {
