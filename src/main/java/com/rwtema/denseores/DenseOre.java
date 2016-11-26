@@ -2,7 +2,7 @@ package com.rwtema.denseores;
 
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
-import com.rwtema.denseores.blockstates.OreType;
+import com.rwtema.denseores.compat.Compat;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.EnumMap;
+import javax.annotation.Nullable;
 
 /*
  * Dense ore entry
@@ -22,76 +22,71 @@ import java.util.EnumMap;
  * holds data for when we need it
  */
 public class DenseOre {
-    public final String name;
+	public final ResourceLocation name;
 
-    public int rendertype;
-    public String baseBlock;
-    public int metadata;
-    public String underlyingBlockTexture;
-    public String texture;
+	public int rendertype;
+	public ResourceLocation baseBlock;
+	public int metadata;
 
-    public int retroGenId;
+	public String underlyingBlockTexture;
+	@Nullable
+	public String texture;
 
-
-    public BlockDenseOre block;
-    public ItemBlockDenseOre itemBlock;
-
-    boolean initSmelt = false;
-    private ItemStack smelt;
-
-    @SideOnly(Side.CLIENT)
-    public EnumMap<OreType, TextureAtlasSprite> sprites;
-    public String baseOreDictionaryEntry;
+	public int retroGenId;
 
 
-    public DenseOre(String name, String baseBlock, int metadata, String underlyingBlock, String texture, int retroGenId, int renderType) {
-        this.name = name;
-        this.baseBlock = baseBlock;
-        this.metadata = metadata;
-        this.underlyingBlockTexture = underlyingBlock;
-        this.texture = texture;
-        this.retroGenId = retroGenId;
+	public BlockDenseOre block;
+	public ItemBlockDenseOre itemBlock;
+	@SideOnly(Side.CLIENT)
+	public TextureAtlasSprite sprite;
+	public String baseOreDictionaryEntry;
+	boolean initSmelt = false;
+	private ItemStack smelt;
 
-        this.rendertype = renderType;
-    }
 
-    public void setBlock(BlockDenseOre block) {
-        this.block = block;
-        itemBlock = (ItemBlockDenseOre) Item.getItemFromBlock(block);
-    }
+	public DenseOre(ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
+		this.name = name;
+		this.baseBlock = baseBlock;
+		this.metadata = metadata;
+		this.underlyingBlockTexture = underlyingBlock;
+		this.texture = texture;
+		this.retroGenId = retroGenId;
+		this.rendertype = renderType;
+	}
 
-    public Block getBaseBlock() {
-        if (Block.blockRegistry.containsKey(new ResourceLocation(baseBlock)))
-            return Block.getBlockFromName(baseBlock);
-        return Blocks.air;
-    }
+	public void setBlock(BlockDenseOre block) {
+		this.block = block;
+		itemBlock = (ItemBlockDenseOre) Item.getItemFromBlock(block);
+	}
 
-    public ItemStack newStack(int stacksize) {
-        return new ItemStack(getBaseBlock(), stacksize, metadata);
-    }
+	public Block getBaseBlock() {
+		if (Block.REGISTRY.containsKey(baseBlock))
+			return Block.REGISTRY.getObject(baseBlock);
+		return Blocks.AIR;
+	}
 
-    public ItemStack getSmeltingRecipe() {
-        if (initSmelt)
-            return smelt;
+	public ItemStack newStack(int stacksize) {
+		return new ItemStack(getBaseBlock(), stacksize, metadata);
+	}
 
-        initSmelt = true;
-        ItemStack out = FurnaceRecipes.instance().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
+	public ItemStack getSmeltingRecipe() {
+		if (initSmelt)
+			return smelt;
 
-        if (out != null) {
-            out = out.copy();
-            out.stackSize = (int) (out.stackSize * 3);
-            if (out.stackSize > 64)
-                out.stackSize = 64;
-            else if (out.stackSize < 1)
-                out.stackSize = 1;
-        }
+		initSmelt = true;
+		ItemStack out = FurnaceRecipes.instance().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
 
-        smelt = out;
+		if (Compat.INSTANCE.isValid(out)) {
+			out = out.copy();
+			Compat.INSTANCE.setStackSize(out, Math.min(3, out.getMaxStackSize()));
+		}
 
-        return out;
-    }
+		smelt = out;
 
-    public IBlockState getBaseState() {
-        return block.getBaseBlockState();
-    }
+		return out;
+	}
+
+	public IBlockState getBaseState() {
+		return block.getBaseBlockState();
+	}
 }

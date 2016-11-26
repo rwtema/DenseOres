@@ -1,52 +1,52 @@
 package com.rwtema.denseores.blocks;
 
-import com.rwtema.denseores.blocks.BlockDenseOre;
-import com.rwtema.denseores.blockstates.OreType;
+import com.rwtema.denseores.compat.Compat;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class ItemBlockDenseOre extends ItemBlock {
-    BlockDenseOre oreBlock;
+	BlockDenseOre oreBlock;
 
-    public ItemBlockDenseOre(Block block) {
-        super(block);
-        oreBlock = (BlockDenseOre) block;
-        this.setHasSubtypes(true);
-    }
+	public ItemBlockDenseOre(Block block) {
+		super(block);
+		oreBlock = (BlockDenseOre) block;
+		this.setHasSubtypes(true);
+	}
 
-    public int getMetadata(int par1) {
-        return par1;
-    }
+	public int getMetadata(int par1) {
+		return par1;
+	}
 
-    // Adds the 'dense' qualifier to the base blocks name
-    public String getItemStackDisplayName(ItemStack stack) {
-        OreType oreType = OreType.get(stack.getItemDamage());
-        if (!oreBlock.isValid())
-            return "Invalid Ore";
-        else {
-            ItemStack temp = new ItemStack(oreBlock.getBlock(), 1, oreBlock.denseOre.metadata);
+	// Adds the 'dense' qualifier to the base blocks name
+	@Nonnull
+	public String getItemStackDisplayName(@Nonnull ItemStack stack) {
+		if (!oreBlock.isValid())
+			return "Invalid Ore";
+		else {
+			ItemStack temp = new ItemStack(oreBlock.getBlock(), 1, oreBlock.denseOre.metadata);
 
-            String p = ("" + StatCollector.translateToLocal("denseores." + oreType.getName() + ".prefix")).trim();
-            return p.replaceFirst("ORENAME", temp.getDisplayName());
-        }
-    }
+			String p = ("" + I18n.translateToLocal("denseores.dense.prefix")).trim();
+			return p.replaceFirst("ORENAME", temp.getDisplayName());
+		}
+	}
 
-    @Override
-    public boolean hasCustomEntity(ItemStack stack) {
-        return !oreBlock.isValid() || !OreType.get(stack.getItemDamage()).enabled;
-    }
+	@Override
+	public boolean hasCustomEntity(ItemStack stack) {
+		return !oreBlock.isValid();
+	}
 
-    @Override
-    public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-        return new EntityItem(world, location.posX, location.posY, location.posZ,
-                new ItemStack(oreBlock.getNullOverride(world, new BlockPos(location)), itemstack.stackSize));
-    }
+	@Override
+	public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+		return new EntityItem(world, location.posX, location.posY, location.posZ,
+				new ItemStack(BlockDenseOre.getNullOverride(world, new BlockPos(location)), Compat.INSTANCE.getStackSize(itemstack)));
+	}
 
 }

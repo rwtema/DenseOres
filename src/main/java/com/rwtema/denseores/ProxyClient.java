@@ -1,28 +1,41 @@
 package com.rwtema.denseores;
 
 
-import com.rwtema.denseores.blocks.BlockDenseOre;
-import com.rwtema.denseores.blockstates.DenseOreBlockState;
-import com.rwtema.denseores.commands.CommandClientOutputTextures;
-import com.rwtema.denseores.commands.CommandClientIdentifyBlock;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraftforge.fml.client.CustomModLoadingErrorDisplayException;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ProxyClient extends Proxy {
-    @Override
-    public void postInit() {
-        super.postInit();
-        ClientCommandHandler.instance.registerCommand(new CommandClientOutputTextures());
-        ClientCommandHandler.instance.registerCommand(new CommandClientIdentifyBlock());
-    }
+	@Override
+	public void postInit() {
+		super.postInit();
 
-    @Override
-    public void loadModel(BlockDenseOre blockDenseOre, IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        ((DenseOreBlockState) state).model.handleState(blockDenseOre.getBaseBlockState(), state, worldIn, pos);
-    }
+	}
+
+	@Override
+	public RuntimeException wrap(RuntimeException throwable) {
+		return new CustomModLoadingErrorDisplayException(throwable.getMessage(), throwable) {
+			@Override
+			public void initGui(GuiErrorScreen errorScreen, FontRenderer fontRenderer) {
+				
+			}
+
+			@Override
+			public void drawScreen(GuiErrorScreen errorScreen, FontRenderer fontRenderer, int mouseRelX, int mouseRelY, float tickTime) {
+				int offset = 75;
+
+				errorScreen.drawCenteredString(fontRenderer, throwable.getMessage(), errorScreen.width / 2, offset, 0xFFFFFF);
+//				offset+=10;
+//				errorScreen.drawCenteredString(fontRenderer, String.format("The mod listed below does not want to run in Minecraft version %s", Loader.instance().getMinecraftModContainer().getVersion()), errorScreen.width / 2, offset, 0xFFFFFF);
+//				offset+=5;
+//				offset+=10;
+//				errorScreen.drawCenteredString(fontRenderer, String.format("%s (%s) wants Minecraft %s", wrongMC.mod.getName(), wrongMC.mod.getModId(), wrongMC.mod.acceptableMinecraftVersionRange()), errorScreen.width / 2, offset, 0xEEEEEE);
+//				offset+=20;
+//				errorScreen.drawCenteredString(fontRenderer, "The file 'fml-client-latest.log' contains more information", errorScreen.width / 2, offset, 0xFFFFFF);
+			}
+		};
+	}
 }
