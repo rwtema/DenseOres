@@ -64,11 +64,17 @@ public class ModelGen {
 
 			Collection<ResourceLocation> textures = model.getTextures();
 
-			textures.stream().findFirst().ifPresent(t -> ore.texture = t.toString());
+			for (ResourceLocation texture : textures) {
+				if (!texture.equals(new ResourceLocation(ore.underlyingBlockTexture))) {
+					ore.texture = texture.toString();
+					break;
+				}
+			}
+
 		}
 
 		for (DenseOre ore : DenseOresRegistry.ores.values()) {
-			if (ore.texture == null) {
+			if (ore.texture == null || "".equals(ore.texture)) {
 				ore.sprite = event.getMap().getMissingSprite();
 			} else {
 				TextureOre textureOre = new TextureOre(ore);
