@@ -3,6 +3,7 @@ package com.rwtema.denseores;
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
 import com.rwtema.denseores.compat.Compat;
+import com.rwtema.denseores.utils.LogHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -21,14 +22,14 @@ public class DenseOresRegistry {
 
 	// add vanilla entries (TODO: add a way to disable vanilla ores)
 	public static void initVanillaOres() {
-		registerOre(new ResourceLocation("iron_ore"), 0, "blocks/stone", "blocks/iron_ore", 0, 0);
-		registerOre(new ResourceLocation("gold_ore"), 0, "blocks/stone", "blocks/gold_ore", 0, 0);
-		registerOre(new ResourceLocation("lapis_ore"), 0, "blocks/stone", "blocks/lapis_ore", 0, 0);
-		registerOre(new ResourceLocation("diamond_ore"), 0, "blocks/stone", "blocks/diamond_ore", 0, 0);
-		registerOre(new ResourceLocation("emerald_ore"), 0, "blocks/stone", "blocks/emerald_ore", 0, 0);
-		registerOre(new ResourceLocation("redstone_ore"), 0, "blocks/stone", "blocks/redstone_ore", 0, 0);
-		registerOre(new ResourceLocation("coal_ore"), 0, "blocks/stone", "blocks/coal_ore", 0, 0);
-		registerOre(new ResourceLocation("quartz_ore"), 0, "blocks/netherrack", "blocks/quartz_ore", 0, 0);
+		registerOre("Vanilla Iron Ore", new ResourceLocation("iron_ore"), 0, "blocks/stone", "blocks/iron_ore", 0, 0);
+		registerOre("Vanilla Gold Ore", new ResourceLocation("gold_ore"), 0, "blocks/stone", "blocks/gold_ore", 0, 0);
+		registerOre("Vanilla Lapis Ore", new ResourceLocation("lapis_ore"), 0, "blocks/stone", "blocks/lapis_ore", 0, 0);
+		registerOre("Vanilla Diamond Ore", new ResourceLocation("diamond_ore"), 0, "blocks/stone", "blocks/diamond_ore", 0, 0);
+		registerOre("Vanilla Emerald Ore", new ResourceLocation("emerald_ore"), 0, "blocks/stone", "blocks/emerald_ore", 0, 0);
+		registerOre("Vanilla Redstone Ore", new ResourceLocation("redstone_ore"), 0, "blocks/stone", "blocks/redstone_ore", 0, 0);
+		registerOre("Vanilla Coal Ore", new ResourceLocation("coal_ore"), 0, "blocks/stone", "blocks/coal_ore", 0, 0);
+		registerOre("Vanilla Quartz Ore", new ResourceLocation("quartz_ore"), 0, "blocks/netherrack", "blocks/quartz_ore", 0, 0);
 	}
 
 	// create the blocks needed
@@ -46,7 +47,7 @@ public class DenseOresRegistry {
 		}
 	}
 
-	public static DenseOre registerOre(ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
+	public static DenseOre registerOre(@Nullable String unofficialName, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
 		if ("".equals(baseBlock.toString()) || "minecraft:air".equals(baseBlock.toString()))
 			return null;
 
@@ -56,11 +57,15 @@ public class DenseOresRegistry {
 			return null;
 		}
 
-		ResourceLocation name = new ResourceLocation("denseores", (resourceDomain + "_" + baseBlock.getResourcePath()).toLowerCase(Locale.ENGLISH));
+		ResourceLocation name = new ResourceLocation("denseores", (resourceDomain + "_" + baseBlock.getResourcePath() + "_" + metadata).toLowerCase(Locale.ENGLISH));
 
 		if ("".equals(texture)) texture = null;
 
-		DenseOre ore = new DenseOre(name, baseBlock, metadata, underlyingBlock, texture, retroGenId, renderType);
+		if (unofficialName == null) {
+			unofficialName = name.toString();
+		}
+
+		DenseOre ore = new DenseOre(unofficialName, name, baseBlock, metadata, underlyingBlock, texture, retroGenId, renderType);
 		ores.put(name, ore);
 		return ore;
 	}
