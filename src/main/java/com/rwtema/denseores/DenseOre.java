@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
  * holds data for when we need it
  */
 public class DenseOre {
+	public final String unofficialName;
 	public final ResourceLocation name;
 
 	public int rendertype;
@@ -44,7 +45,8 @@ public class DenseOre {
 	private ItemStack smelt;
 
 
-	public DenseOre(ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
+	public DenseOre(String unofficialName, ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
+		this.unofficialName = unofficialName;
 		this.name = name;
 		this.baseBlock = new ResourceLocation(Compat.INSTANCE.makeLowercase(baseBlock.toString()));
 		this.metadata = metadata;
@@ -68,6 +70,20 @@ public class DenseOre {
 
 	public ItemStack newStack(int stacksize) {
 		return new ItemStack(getBaseBlock(), stacksize, metadata);
+	}
+
+	@Override
+	public String toString() {
+		return "DenseOre{" +
+				"unofficialName='" + unofficialName + '\'' +
+				", name=" + name +
+				", rendertype=" + rendertype +
+				", baseBlock=" + baseBlock +
+				", metadata=" + metadata +
+				", underlyingBlockTexture='" + underlyingBlockTexture + '\'' +
+				", texture='" + texture + '\'' +
+				", retroGenId=" + retroGenId +
+				'}';
 	}
 
 	public ItemStack getSmeltingRecipe() {
