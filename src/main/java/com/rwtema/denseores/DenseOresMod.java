@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION, dependencies = "after:*")
@@ -83,6 +84,8 @@ public class DenseOresMod {
 					@Nullable
 					String texture = null;
 
+					String unofficialName = null;
+
 					if (messageType == ItemStack.class) {
 						ItemStack stack = message.getItemStackValue();
 						ItemBlock itemBlock = (ItemBlock) stack.getItem();
@@ -99,11 +102,16 @@ public class DenseOresMod {
 							underlyingBlockTexture = nbt.getString("underlyingBlockTexture");
 						}
 						rendertype = nbt.getInteger("renderType");
+						unofficialName = nbt.getString("config_entry");
 					} else {
-						continue;
+						throw new IllegalArgumentException("Unable to process IMC type: " + messageType);
+					}
+
+					if(unofficialName == null || "".equals(unofficialName)){
+						unofficialName = null;
 					}
 					DenseOresRegistry.registerOre(
-							location, metadata, underlyingBlockTexture, texture, 0, rendertype
+							unofficialName, location, metadata, underlyingBlockTexture, texture, 0, rendertype
 					);
 				}
 			} catch (Exception err) {
