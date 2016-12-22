@@ -2,13 +2,13 @@ package com.rwtema.denseores.compat;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class CompatNoCompat extends Compat {
 	@Override
@@ -97,5 +97,10 @@ public class CompatNoCompat extends Compat {
 		} else {
 			sender.sendMessage(component);
 		}
+	}
+
+	@Override
+	public String makeLowercase(@Nullable String string) {
+		return string == null ? null : string.toLowerCase(Locale.ENGLISH);
 	}
 }

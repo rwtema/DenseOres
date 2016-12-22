@@ -2,13 +2,16 @@ package com.rwtema.denseores;
 
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
+import com.rwtema.denseores.compat.Compat;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class DenseOresRegistry {
@@ -47,7 +50,13 @@ public class DenseOresRegistry {
 		if ("".equals(baseBlock.toString()) || "minecraft:air".equals(baseBlock.toString()))
 			return null;
 
-		ResourceLocation name = new ResourceLocation("denseores", baseBlock.getResourceDomain() + "_" + baseBlock.getResourcePath());
+		String resourceDomain = baseBlock.getResourceDomain();
+
+		if (!"minecraft".equals(resourceDomain) && !Loader.isModLoaded(Compat.INSTANCE.makeLowercase(resourceDomain))) {
+			return null;
+		}
+
+		ResourceLocation name = new ResourceLocation("denseores", (resourceDomain + "_" + baseBlock.getResourcePath()).toLowerCase(Locale.ENGLISH));
 
 		if ("".equals(texture)) texture = null;
 

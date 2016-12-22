@@ -8,6 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Locale;
 
 public class CompatLayer extends Compat {
 
@@ -69,5 +71,13 @@ public class CompatLayer extends Compat {
 	@Override
 	public void addChatMessage(@Nonnull ICommandSender sender, @Nonnull ITextComponent component) {
 		ChatTools.addChatMessage(sender, component);
+	}
+
+	@Override
+	public String makeLowercase(@Nullable String string) {
+		if(string != null && isV11()){
+			return string.toLowerCase(Locale.ENGLISH);
+		}
+		return string;
 	}
 }

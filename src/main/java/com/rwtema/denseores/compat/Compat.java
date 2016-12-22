@@ -9,6 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.common.ModAPIManager;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class Compat {
 	public final static Compat INSTANCE;
@@ -58,4 +59,7 @@ public abstract class Compat {
 	public abstract ItemStack getEmptyStack();
 
 	public abstract void addChatMessage(@Nonnull ICommandSender sender, @Nonnull ITextComponent component) ;
+
+
+	public abstract String makeLowercase(@Nullable String string);
 }

@@ -146,7 +146,6 @@ public class ModIntegration {
 		return out;
 	}
 
-	//
 	public static void addModIntegration() {
 		for (DenseOre ore : DenseOresRegistry.ores.values()) {
 			ItemStack output = new ItemStack(ore.getBaseBlock(), 1, ore.metadata);

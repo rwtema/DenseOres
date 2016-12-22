@@ -137,6 +137,7 @@ public class DenseOresMod {
 	@Mod.EventHandler
 	public void serverStarting(FMLServerStartingEvent event) {
 		if (LogHelper.isDeObf) {
+			// Roundabout way of preventing java from loading the class when it is not needed
 			//noinspection TrivialFunctionalExpressionUsage
 			((Consumer<FMLServerStartingEvent>) WorldGenAnalyser::register).accept(event);
 		}

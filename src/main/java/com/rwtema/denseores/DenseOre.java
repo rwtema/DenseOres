@@ -46,10 +46,10 @@ public class DenseOre {
 
 	public DenseOre(ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
 		this.name = name;
-		this.baseBlock = baseBlock;
+		this.baseBlock = new ResourceLocation(Compat.INSTANCE.makeLowercase(baseBlock.toString()));
 		this.metadata = metadata;
-		this.underlyingBlockTexture = underlyingBlock;
-		this.texture = texture;
+		this.underlyingBlockTexture = Compat.INSTANCE.makeLowercase(underlyingBlock);
+		this.texture = Compat.INSTANCE.makeLowercase(texture);
 		this.retroGenId = retroGenId;
 		this.rendertype = renderType;
 	}
@@ -62,6 +62,7 @@ public class DenseOre {
 	public Block getBaseBlock() {
 		if (Block.REGISTRY.containsKey(baseBlock))
 			return Block.REGISTRY.getObject(baseBlock);
+
 		return Blocks.AIR;
 	}
 
