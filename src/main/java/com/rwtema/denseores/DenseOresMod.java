@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION, dependencies = "after:*")
+@Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION, acceptedMinecraftVersions = "[1.9,1.9.1,1.9.2,1.9.3,1.9.4,1.10,1.10.1,1.10.2,1.11]", dependencies = "after:*")
 public class DenseOresMod {
 	public static final String MODID = "denseores";
 	public static final String VERSION = "1.0";
