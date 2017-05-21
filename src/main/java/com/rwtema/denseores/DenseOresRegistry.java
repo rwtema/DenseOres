@@ -3,7 +3,6 @@ package com.rwtema.denseores;
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
 import com.rwtema.denseores.compat.Compat;
-import com.rwtema.denseores.utils.LogHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -80,6 +79,9 @@ public class DenseOresRegistry {
 
 					if (oreName.length() > 3 && oreName.startsWith("ore") && Character.isUpperCase(oreName.charAt(3))) {
 						ore.baseOreDictionaryEntry = oreName;
+						String newOreName = "dense" + oreName;
+						ore.oreDictionary = newOreName;
+						OreDictionary.registerOre(newOreName, new ItemStack(ore.block));
 					}
 				}
 			}

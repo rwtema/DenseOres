@@ -43,6 +43,7 @@ public class DenseOre {
 	public String baseOreDictionaryEntry;
 	boolean initSmelt = false;
 	private ItemStack smelt;
+	public String oreDictionary;
 
 
 	public DenseOre(String unofficialName, ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
