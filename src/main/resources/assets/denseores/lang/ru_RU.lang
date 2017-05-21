@@ -1,8 +1,8 @@
 denseores.prefix=Плотная ORENAME
 denseores.command.help=Выводит текущие сгенерированные текстуры в папку 'denseoretextures'.
-denseores.commandIdentify.help=Identifies the block's registry name and it's texture
-denseores.commandIdentify.invalid=Currently held item is not a block
-denseores.commandIdentify.invalidtexture=Unable to find valid texture
-denseores.commandIdentify.multipleTextures=There are multiple textures available for S:baseBlockTexture
-denseores.commandIdentify.start=-= Analyzing Item: %s =-
-denseores.commandIdentify.obligitarydisclaimer=Disclaimer: These values are not guaranteed to be accurate
+denseores.commandIdentify.help=Определяет имя блока в реестре и его текстуру.
+denseores.commandIdentify.invalid=Предмет, который вы держите в руках – не блок.
+denseores.commandIdentify.invalidtexture=Не удаётся найти корректную текстуру.
+denseores.commandIdentify.multipleTextures=Найдено несколько текстур для S:baseBlockTexture
+denseores.commandIdentify.start=-= Исследование предмета: %s =-
+denseores.commandIdentify.obligitarydisclaimer=Примечание: Данные могут быть неточными.
