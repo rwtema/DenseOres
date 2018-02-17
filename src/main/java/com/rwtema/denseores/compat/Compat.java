@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModAPIManager;
 
 import javax.annotation.Nonnull;
@@ -16,7 +17,7 @@ public abstract class Compat {
 
 	static {
 		Compat instance;
-		if (ModAPIManager.INSTANCE.hasAPI("compatlayer")) {
+		if (Loader.isModLoaded("compatlayer") || ModAPIManager.INSTANCE.hasAPI("compatlayer")) {
 			try {
 				instance = (Compat) Class.forName("com.rwtema.denseores.compat.CompatLayer").newInstance();
 			} catch (Throwable e) {
