@@ -37,7 +37,7 @@ public class DenseOresMod {
 	public void preInit(FMLPreInitializationEvent event) {
 		String version = Loader.instance().getMinecraftModContainer().getVersion();
 		if (ImmutableSet.of("1.9", "1.9.1", "1.9.2", "1.9.3", "1.9.4", "1.10", "1.10.1", "1.10.2").contains(version)) {
-			if (!ModAPIManager.INSTANCE.hasAPI("compatlayer")) {
+			if (!Loader.isModLoaded("compatlayer") && !ModAPIManager.INSTANCE.hasAPI("compatlayer")) {
 				throw proxy.wrap(new EnhancedRuntimeException(String.format("Dense Ores requires CompatLayer to run in Minecraft %s", version)) {
 					@Override
 					protected void printStackTrace(WrappedPrintStream stream) {
