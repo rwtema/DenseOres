@@ -12,7 +12,7 @@ import net.minecraft.util.EnumFacing;
 import java.util.*;
 
 
-@SuppressWarnings("unchecked")
+
 public class ModelBuilder {
 	// create a blank baked model with the default values
 	public static SimpleBakedModel newBlankModel(TextureAtlasSprite texture) {

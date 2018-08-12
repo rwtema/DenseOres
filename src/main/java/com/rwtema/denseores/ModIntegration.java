@@ -1,6 +1,5 @@
 package com.rwtema.denseores;
 
-import com.rwtema.denseores.compat.Compat;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -18,49 +17,6 @@ import java.util.Locale;
 public class ModIntegration {
 	public static final String[] canonOres = {"oreIron", "oreGold", "oreCopper", "oreTin", "oreSilver", "oreLead", "oreNickel", "orePlatinum"};
 	public static final String[] canonSecondaryOres = {"oreNickel", null, "oreGold", "oreIron", "oreLead", "oreSilver", "orePlatinum", null};
-
-	//    public static class TE4Integration implements ModInterface {
-//        @Override
-//        public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
-//            addPulverizer(input, output);
-//
-//            if (isCanonOre(ore.baseOreDictionary) && getFurnace(ore, 1) != null) {
-//                ItemStack slag = GameRegistry.findItemStack("ThermalExpansion", "slagRich", 1);
-//                String s = getSecondCanonOre(ore.baseOreDictionary);
-//                if (s != null && getSmeltedIngot(s, ore.modOwner) != null)
-//                    slag = cloneStack(getSmeltedIngot(s, ore.modOwner), 3);
-//
-//                addSmelter(input, new ItemStack(Blocks.sand, 4), getFurnace(ore, 8.0F), slag, 25);
-//                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "dustPyrotheum", 2), getFurnace(ore, 8.0F), slag, 75);
-//                addSmelter(input, GameRegistry.findItemStack("ThermalFoundation", "crystalCinnabar", 2), getFurnace(ore, 16.0F), slag, 100);
-//            }
-//        }
-//
-//        private void addSmelter(ItemStack a, ItemStack b, ItemStack output, ItemStack altOutput, int prob) {
-//            if (a == null || b == null || output == null)
-//                return;
-//
-//            NBTTagCompound tag = new NBTTagCompound();
-//            tag.setInteger("energy", 16000);
-//            tag.setTag("primaryInput", getItemStackNBT(a));
-//            tag.setTag("secondaryInput", getItemStackNBT(b));
-//            tag.setTag("primaryOutput", getItemStackNBT(output));
-//            if (altOutput != null) {
-//                tag.setTag("secondaryOutput", getItemStackNBT(altOutput));
-//                tag.setInteger("secondaryChance", prob);
-//            }
-//            FMLInterModComms.sendMessage("ThermalExpansion", "SmelterRecipe", tag);
-//        }
-//
-//        private void addPulverizer(ItemStack input, ItemStack output) {
-//            NBTTagCompound tag = new NBTTagCompound();
-//            tag.setInteger("energy", 8000);
-//            tag.setTag("input", getItemStackNBT(input));
-//            tag.setTag("primaryOutput", getItemStackNBT(output, 4));
-//            FMLInterModComms.sendMessage("ThermalExpansion", "PulverizerRecipe", tag);
-//        }
-//    }
-//
 	public static ModInterface[] mods = {new VanillaFurnace(), new ExtraUtilsCompat(), new EnderIOCompat()};
 
 	public static boolean isCanonOre(String ore) {
@@ -88,7 +44,7 @@ public class ModIntegration {
 
 	public static ItemStack cloneStack(ItemStack item, int newStackSize) {
 		ItemStack newitem = item.copy();
-		Compat.INSTANCE.setStackSize(newitem, newStackSize);
+		newitem.setCount(newStackSize);
 		return newitem;
 	}
 
@@ -122,13 +78,13 @@ public class ModIntegration {
 	public static ItemStack getFurnace(DenseOre toSmelt, float multiplier) {
 		ItemStack out = FurnaceRecipes.instance().getSmeltingResult(toSmelt.newStack(1));
 
-		if (Compat.INSTANCE.isValid(out)) {
+		if (out.isEmpty()) {
 			out = out.copy();
 
 			if (new ResourceLocation("minecraft:lapis_ore").equals(toSmelt.baseBlock))
-				Compat.INSTANCE.setStackSize(out, 6);
+				out.setCount(6);
 			else if (new ResourceLocation("minecraft:redstone_ore").equals(toSmelt.baseBlock))
-				Compat.INSTANCE.setStackSize(out, 4);
+				out.setCount(4);
 
 			multiplyStackSize(out, multiplier);
 		}
@@ -137,12 +93,12 @@ public class ModIntegration {
 
 	public static ItemStack multiplyStackSize(@Nonnull ItemStack out, float multiplier) {
 		out = out.copy();
-		Compat.INSTANCE.setStackSize(out, (int) Math.round(Compat.INSTANCE.getStackSize(out) * multiplier));
-		if (Compat.INSTANCE.getStackSize(out) > out.getMaxStackSize())
-			Compat.INSTANCE.setStackSize(out, out.getMaxStackSize());
+		out.setCount((int) Math.round(out.getCount() * multiplier));
+		if (out.getCount() > out.getMaxStackSize())
+			out.setCount(out.getMaxStackSize());
 
-		if (Compat.INSTANCE.getStackSize(out) < 1)
-			Compat.INSTANCE.setStackSize(out, 1);
+		if (out.getCount() < 1)
+			out.setCount(1);
 		return out;
 	}
 
@@ -160,7 +116,7 @@ public class ModIntegration {
 
 	@Nonnull
 	private static String getModID(String modID) {
-		return Compat.INSTANCE.isV11() ? modID.toLowerCase(Locale.US) : modID;
+		return modID.toLowerCase(Locale.US);
 	}
 
 	public interface ModInterface {
@@ -171,7 +127,7 @@ public class ModIntegration {
 		@Override
 		public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
 			ItemStack out = getFurnace(ore, 3F);
-			if (!Compat.INSTANCE.isEmpty(out)) {
+			if (out.getItem() != null) {
 				GameRegistry.addSmelting(input, multiplyStackSize(out, 3), 1.0F);
 			}
 		}
@@ -206,7 +162,7 @@ public class ModIntegration {
 			stringBuilder.append("\" itemMeta=\"");
 			stringBuilder.append(input.getMetadata());
 			stringBuilder.append("\" number = \"");
-			stringBuilder.append(Compat.INSTANCE.getStackSize(input));
+			stringBuilder.append(input.getCount());
 			stringBuilder.append("\" />");
 		}
 	}

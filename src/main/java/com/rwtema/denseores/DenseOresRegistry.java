@@ -2,15 +2,19 @@ package com.rwtema.denseores;
 
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
-import com.rwtema.denseores.compat.Compat;
+import com.rwtema.denseores.utils.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.oredict.OreDictionary;
@@ -19,12 +23,11 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
+@Mod.EventBusSubscriber(modid = DenseOresMod.MODID)
 public class DenseOresRegistry {
 
 	public static Map<ResourceLocation, DenseOre> ores = new HashMap<>();
 	public static String blockPrefix = DenseOresMod.MODID;
-
 	// add vanilla entries (TODO: add a way to disable vanilla ores)
 	public static void initVanillaOres() {
 		registerOre("Vanilla Iron Ore", new ResourceLocation("iron_ore"), 0, "blocks/stone", "blocks/iron_ore", 0, 0);
@@ -37,20 +40,16 @@ public class DenseOresRegistry {
 		registerOre("Vanilla Quartz Ore", new ResourceLocation("quartz_ore"), 0, "blocks/netherrack", "blocks/quartz_ore", 0, 0);
 	}
 
-	@SubscribeEvent
-	public static void registerBlock(final RegistryEvent.Register<Block> event) {
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void registerBiome(final RegistryEvent.Register<Biome> event) {
+		LogHelper.info("Starting ore block and item registry.");
 		for (DenseOre ore : ores.values()) {
-			event.getRegistry().register(ore.block);
+			LogHelper.info("Registered an ore block " + ore.unofficialName + ".");
+			ForgeRegistries.BLOCKS.register(ore.block);
+			LogHelper.info("Registered an ore item " + ore.unofficialName + ".");
+			ForgeRegistries.ITEMS.register(ore.itemBlock);
 		}
 	}
-	
-	@SubscribeEvent
-	public static void registerItem(final RegistryEvent.Register<Item> event) {
-		for (DenseOre ore : ores.values()) {
-			event.getRegistry().register(ore.itemBlock);
-		}
-	}
-		
 
 	public static DenseOre registerOre(@Nullable String unofficialName, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
 		if ("".equals(baseBlock.toString()) || "minecraft:air".equals(baseBlock.toString()))
@@ -58,7 +57,7 @@ public class DenseOresRegistry {
 
 		String resourceDomain = baseBlock.getNamespace();
 
-		if (!"minecraft".equals(resourceDomain) && !Loader.isModLoaded(Compat.INSTANCE.makeLowercase(resourceDomain))) {
+		if (!"minecraft".equals(resourceDomain) && !Loader.isModLoaded(resourceDomain.toString().toLowerCase())) {
 			return null;
 		}
 

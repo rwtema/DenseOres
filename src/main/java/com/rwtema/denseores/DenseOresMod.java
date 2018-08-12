@@ -2,8 +2,6 @@ package com.rwtema.denseores;
 
 import com.google.common.collect.ImmutableSet;
 import com.rwtema.denseores.client.ModelGen;
-import com.rwtema.denseores.compat.Compat;
-import com.rwtema.denseores.debug.WorldGenAnalyser;
 import com.rwtema.denseores.utils.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
@@ -22,8 +20,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
-
-@Mod(modid = DenseOresMod.MODID, version = DenseOresMod.VERSION, dependencies = "after:*", acceptedMinecraftVersions = "[1.9,1.11.2]")
+@Mod(modid = DenseOresMod.MODID, name = "Dense Ores", version = DenseOresMod.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class DenseOresMod {
 	public static final String MODID = "denseores";
 	public static final String VERSION = "1.0";
@@ -35,27 +32,14 @@ public class DenseOresMod {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		String version = Loader.instance().getMinecraftModContainer().getVersion();
-		if (ImmutableSet.of("1.9", "1.9.1", "1.9.2", "1.9.3", "1.9.4", "1.10", "1.10.1", "1.10.2").contains(version)) {
-			if (!ModAPIManager.INSTANCE.hasAPI("compatlayer")) {
-				throw proxy.wrap(new EnhancedRuntimeException(String.format("Dense Ores requires CompatLayer to run in Minecraft %s", version)) {
-					@Override
-					protected void printStackTrace(WrappedPrintStream stream) {
-						stream.println(String.format("Dense Ores Mod requires CompatLayer to run in Minecraft %s", version));
-					}
-				});
-			}
-		}
-
-
 		config = event.getSuggestedConfigurationFile();
+		LogHelper.info("Loading the config.");
+		DenseOresConfig.instance.loadConfig(config);
 	}
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-		// load the config in the init to make sure other mods have finished loading
 		LogHelper.info("Ph'nglui mglw'nafh, y'uln Dense Ores shugg ch'agl");
-		DenseOresConfig.instance.loadConfig(config);
 		for (FMLInterModComms.IMCMessage message : FMLInterModComms.fetchRuntimeMessages(this)) {
 			String key = message.key;
 			try {
@@ -120,34 +104,26 @@ public class DenseOresMod {
 		}
 
 		ModelGen.register();
-
-		DenseOresRegistry.buildOreDictionary();
 		ModIntegration.addModIntegration();
-
+		LogHelper.info("Building the ore dictionary.");
+		DenseOresRegistry denseore_registry = new DenseOresRegistry();
+		MinecraftForge.EVENT_BUS.register(denseore_registry);
+		denseore_registry.buildOreDictionary();
+		LogHelper.info("Registering the world generator.");
 		WorldGenOres worldGen = new WorldGenOres();
 		GameRegistry.registerWorldGenerator(worldGen, 1000);
 		MinecraftForge.EVENT_BUS.register(worldGen);
-
-		if (LogHelper.isDeObf && Compat.INSTANCE.isV11()) {
-			//noinspection TrivialFunctionalExpressionUsage
-			((Runnable) WorldGenAnalyser::registerWorldGen).run();
-		}
 	}
 
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
-		LogHelper.info("Dense Ores is fully loaded but sadly it cannot tell you the unlocalized name for dirt.");
+		LogHelper.info("Ores are fully densified.");
 	}
 
 	@Mod.EventHandler
 	public void serverStarting(FMLServerStartingEvent event) {
-		if (LogHelper.isDeObf) {
-			// Roundabout way of preventing java from loading the class when it is not needed
-			//noinspection TrivialFunctionalExpressionUsage
-			((Consumer<FMLServerStartingEvent>) WorldGenAnalyser::register).accept(event);
-		}
 	}
 
 }

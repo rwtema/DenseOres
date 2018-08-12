@@ -2,7 +2,6 @@ package com.rwtema.denseores;
 
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
-import com.rwtema.denseores.compat.Compat;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -49,10 +48,10 @@ public class DenseOre {
 	public DenseOre(String unofficialName, ResourceLocation name, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
 		this.unofficialName = unofficialName;
 		this.name = name;
-		this.baseBlock = new ResourceLocation(Compat.INSTANCE.makeLowercase(baseBlock.toString()));
+		this.baseBlock = new ResourceLocation(baseBlock.toString().toLowerCase());
 		this.metadata = metadata;
-		this.underlyingBlockTexture = Compat.INSTANCE.makeLowercase(underlyingBlock);
-		this.texture = Compat.INSTANCE.makeLowercase(texture);
+		this.underlyingBlockTexture = underlyingBlock.toString().toLowerCase();
+		this.texture = texture.toString().toLowerCase();
 		this.retroGenId = retroGenId;
 		this.rendertype = renderType;
 		this.block = new BlockDenseOre(this);
@@ -95,9 +94,9 @@ public class DenseOre {
 		initSmelt = true;
 		ItemStack out = FurnaceRecipes.instance().getSmeltingResult(new ItemStack(getBaseBlock(), 1, metadata));
 
-		if (Compat.INSTANCE.isValid(out)) {
+		if (out.isEmpty()) {
 			out = out.copy();
-			Compat.INSTANCE.setStackSize(out, Math.min(3, out.getMaxStackSize()));
+			out.setCount(Math.min(3, out.getMaxStackSize()));
 		}
 
 		smelt = out;
