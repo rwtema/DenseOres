@@ -1,6 +1,5 @@
 package com.rwtema.denseores.blocks;
 
-import com.rwtema.denseores.compat.Compat;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -46,7 +45,7 @@ public class ItemBlockDenseOre extends ItemBlock {
 	@Override
 	public Entity createEntity(World world, Entity location, ItemStack itemstack) {
 		return new EntityItem(world, location.posX, location.posY, location.posZ,
-				new ItemStack(BlockDenseOre.getNullOverride(world, new BlockPos(location)), Compat.INSTANCE.getStackSize(itemstack)));
+				new ItemStack(BlockDenseOre.getNullOverride(world, new BlockPos(location)), itemstack.getCount()));
 	}
 
 }

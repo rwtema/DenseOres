@@ -8,12 +8,11 @@ import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 
 import java.util.*;
 
 
-@SuppressWarnings("unchecked")
+
 public class ModelBuilder {
 	// create a blank baked model with the default values
 	public static SimpleBakedModel newBlankModel(TextureAtlasSprite texture) {
@@ -110,8 +109,8 @@ public class ModelBuilder {
 
 		IBakedModel result = bakedModel;
 
-		if (model instanceof IPerspectiveAwareModel) {
-			result = new PerspectiveWrapper(result, (IPerspectiveAwareModel) model);
+		if (model instanceof IBakedModel) {
+			result = new PerspectiveWrapper(result, (IBakedModel) model);
 		}
 
 		return result;

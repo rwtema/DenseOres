@@ -51,7 +51,7 @@ public class ModelGen {
 			if (ore.texture != null) {
 				continue;
 			}
-			IBlockState state = ore.getBaseBlock().getStateFromMeta(ore.metadata);
+			IBlockState state = ore.getBaseBlock().getStateById(ore.metadata);
 			Map<IBlockState, ModelResourceLocation> map = mapper.getVariants(ore.getBaseBlock());
 			ModelResourceLocation modelResourceLocation = map.get(state);
 

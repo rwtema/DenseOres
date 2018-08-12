@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -17,11 +15,11 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import java.util.List;
 
-public class PerspectiveWrapper implements IPerspectiveAwareModel {
+public class PerspectiveWrapper implements IBakedModel {
 	final IBakedModel model;
-	final IPerspectiveAwareModel parentPerspective;
+	final IBakedModel parentPerspective;
 
-	public PerspectiveWrapper(IBakedModel model, IPerspectiveAwareModel parentPerspective) {
+	public PerspectiveWrapper(IBakedModel model, IBakedModel parentPerspective) {
 		this.model = model;
 		this.parentPerspective = parentPerspective;
 	}

@@ -108,7 +108,7 @@ public class BlockDenseOre extends Block {
 		init = true;
 
 		baseBlock = denseOre.getBaseBlock();
-		baseBlockState = baseBlock.getStateFromMeta(denseOre.metadata);
+		baseBlockState = baseBlock.getStateById(denseOre.metadata);
 
 		isValid = baseBlock != null && baseBlock != Blocks.AIR;
 	}
@@ -141,19 +141,6 @@ public class BlockDenseOre extends Block {
 			world.setBlockState(pos, state, 0);
 		}
 	}
-
-//	// add creative blocks
-//	@SuppressWarnings("unchecked")
-//	@SideOnly(Side.CLIENT)
-//	@Override
-//	public void getSubBlocks(Item item, CreativeTabs tab, List list) {
-//
-//		if (isValid()) {
-//			for (int i = 0; i < OreType.values().length; i++) {
-//				list.add(new ItemStack(item, 1, i));
-//			}
-//		}
-//	}
 
 	// drop the block with a predefined chance
 	@Override
