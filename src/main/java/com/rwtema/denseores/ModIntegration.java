@@ -111,7 +111,7 @@ public class ModIntegration {
 			out = ingot;
 
 			ResourceLocation s = Item.REGISTRY.getNameForObject(ingot.getItem());
-			if (preferredModOwner != null && preferredModOwner.equals(preferredModOwner.equals(s.getResourceDomain()))) {
+			if (preferredModOwner != null && preferredModOwner.equals(s.getNamespace())) {
 				return out;
 			}
 		}
@@ -183,7 +183,7 @@ public class ModIntegration {
 		public void registerOre(DenseOre ore, ItemStack input, ItemStack output) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<recipeGroup name=\"").append("DenseOres").append("\" >");
-			stringBuilder.append("<recipe name=\"").append("denseores_").append(ore.name.getResourcePath()).append("\" energyCost=\"3600\" >");
+			stringBuilder.append("<recipe name=\"").append("denseores_").append(ore.name.getPath()).append("\" energyCost=\"3600\" >");
 			stringBuilder.append("<input>");
 			addEnderIOXMLEntryItemStack(input, stringBuilder);
 			stringBuilder.append("</input>");
@@ -200,9 +200,9 @@ public class ModIntegration {
 		private void addEnderIOXMLEntryItemStack(ItemStack input, StringBuilder stringBuilder) {
 			ResourceLocation nameForObject = Validate.notNull(Item.REGISTRY.getNameForObject(input.getItem()));
 			stringBuilder.append("<itemStack modID=\"");
-			stringBuilder.append(nameForObject.getResourceDomain());
+			stringBuilder.append(nameForObject.getNamespace());
 			stringBuilder.append("\" itemName=\"");
-			stringBuilder.append(nameForObject.getResourcePath());
+			stringBuilder.append(nameForObject.getPath());
 			stringBuilder.append("\" itemMeta=\"");
 			stringBuilder.append(input.getMetadata());
 			stringBuilder.append("\" number = \"");

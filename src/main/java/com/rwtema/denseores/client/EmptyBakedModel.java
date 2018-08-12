@@ -1,7 +1,6 @@
 package com.rwtema.denseores.client;
 
 import com.google.common.collect.ImmutableList;
-import com.sun.javafx.collections.UnmodifiableObservableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.util.EnumFacing;

@@ -89,7 +89,7 @@ public class DenseOresMod {
 					if (messageType == ItemStack.class) {
 						ItemStack stack = message.getItemStackValue();
 						ItemBlock itemBlock = (ItemBlock) stack.getItem();
-						location = Block.REGISTRY.getNameForObject(itemBlock.block);
+						location = Block.REGISTRY.getNameForObject(itemBlock.getBlock());
 						metadata = itemBlock.getMetadata(itemBlock.getDamage(stack));
 					} else if (messageType == NBTTagCompound.class) {
 						NBTTagCompound nbt = message.getNBTValue();
@@ -119,7 +119,6 @@ public class DenseOresMod {
 			}
 		}
 
-		DenseOresRegistry.buildBlocks();
 		ModelGen.register();
 
 		DenseOresRegistry.buildOreDictionary();

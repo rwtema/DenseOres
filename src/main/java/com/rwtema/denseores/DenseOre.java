@@ -55,11 +55,12 @@ public class DenseOre {
 		this.texture = Compat.INSTANCE.makeLowercase(texture);
 		this.retroGenId = retroGenId;
 		this.rendertype = renderType;
-	}
-
-	public void setBlock(BlockDenseOre block) {
-		this.block = block;
-		itemBlock = (ItemBlockDenseOre) Item.getItemFromBlock(block);
+		this.block = new BlockDenseOre(this);
+		this.block.setRegistryName(this.name);
+		this.block.setTranslationKey(this.name.toString());
+		this.itemBlock = new ItemBlockDenseOre(this.block);
+		this.itemBlock.setRegistryName(this.name);
+		this.itemBlock.setTranslationKey(this.name.toString());
 	}
 
 	public Block getBaseBlock() {

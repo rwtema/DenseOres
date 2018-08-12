@@ -3,10 +3,16 @@ package com.rwtema.denseores;
 import com.rwtema.denseores.blocks.BlockDenseOre;
 import com.rwtema.denseores.blocks.ItemBlockDenseOre;
 import com.rwtema.denseores.compat.Compat;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
@@ -31,32 +37,32 @@ public class DenseOresRegistry {
 		registerOre("Vanilla Quartz Ore", new ResourceLocation("quartz_ore"), 0, "blocks/netherrack", "blocks/quartz_ore", 0, 0);
 	}
 
-	// create the blocks needed
-	public static void buildBlocks() {
+	@SubscribeEvent
+	public static void registerBlock(final RegistryEvent.Register<Block> event) {
 		for (DenseOre ore : ores.values()) {
-			BlockDenseOre block = new BlockDenseOre(ore);
-			ItemBlockDenseOre itemBlockDenseOre = new ItemBlockDenseOre(block);
-			block.setRegistryName(ore.name);
-			block.setUnlocalizedName(ore.name.toString());
-			itemBlockDenseOre.setRegistryName(ore.name);
-			itemBlockDenseOre.setUnlocalizedName(ore.name.toString());
-			GameRegistry.register(block);
-			GameRegistry.register(itemBlockDenseOre);
-			ore.setBlock(block);
+			event.getRegistry().register(ore.block);
 		}
 	}
+	
+	@SubscribeEvent
+	public static void registerItem(final RegistryEvent.Register<Item> event) {
+		for (DenseOre ore : ores.values()) {
+			event.getRegistry().register(ore.itemBlock);
+		}
+	}
+		
 
 	public static DenseOre registerOre(@Nullable String unofficialName, ResourceLocation baseBlock, int metadata, String underlyingBlock, @Nullable String texture, int retroGenId, int renderType) {
 		if ("".equals(baseBlock.toString()) || "minecraft:air".equals(baseBlock.toString()))
 			return null;
 
-		String resourceDomain = baseBlock.getResourceDomain();
+		String resourceDomain = baseBlock.getNamespace();
 
 		if (!"minecraft".equals(resourceDomain) && !Loader.isModLoaded(Compat.INSTANCE.makeLowercase(resourceDomain))) {
 			return null;
 		}
 
-		ResourceLocation name = new ResourceLocation("denseores", (resourceDomain + "_" + baseBlock.getResourcePath() + "_" + metadata).toLowerCase(Locale.ENGLISH));
+		ResourceLocation name = new ResourceLocation("denseores", (resourceDomain + "_" + baseBlock.getPath() + "_" + metadata).toLowerCase(Locale.ENGLISH));
 
 		if ("".equals(texture)) texture = null;
 

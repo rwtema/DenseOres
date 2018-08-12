@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -38,7 +38,7 @@ public class WorldGenOres implements IWorldGenerator {
 			ExtendedBlockStorage extendedblockstorage = storageArray[y >> 4];
 
 			if (extendedblockstorage == null) {
-				extendedblockstorage = storageArray[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !chunk.getWorld().provider.hasNoSky());
+				extendedblockstorage = storageArray[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !chunk.getWorld().provider.hasSkyLight());
 			}
 
 			extendedblockstorage.set(x & 15, y & 15, z & 15, state);
@@ -59,7 +59,7 @@ public class WorldGenOres implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
 
-		Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+		Chunk chunk = world.getChunk(chunkX, chunkZ);
 
 		for (DenseOre denseOre : DenseOresRegistry.ores.values()) {
 			genChunk(chunk, random, denseOre, false);
@@ -69,9 +69,9 @@ public class WorldGenOres implements IWorldGenerator {
 	public void genChunk(Chunk chunk, Random random, DenseOre denseOre, boolean retroGen) {
 		IBlockState replaceState = denseOre.block.getDefaultState();
 		for (int i = 0; i < 1000; i++) {
-			int x = (chunk.xPosition << 4) | random.nextInt(16);
+			int x = (chunk.x << 4) | random.nextInt(16);
 			int y = 1 + random.nextInt(80);
-			int z = (chunk.zPosition << 4) | random.nextInt(16);
+			int z = (chunk.z << 4) | random.nextInt(16);
 
 			BlockPos pos = new BlockPos(x, y, z);
 
@@ -94,7 +94,7 @@ public class WorldGenOres implements IWorldGenerator {
 		rand.setSeed(worldSeed);
 		long xSeed = rand.nextLong() >> 2 + 1L;
 		long zSeed = rand.nextLong() >> 2 + 1L;
-		long chunkSeed = (xSeed * event.getChunk().xPosition + zSeed * event.getChunk().zPosition) ^ worldSeed;
+		long chunkSeed = (xSeed * event.getChunk().x + zSeed * event.getChunk().z) ^ worldSeed;
 		rand.setSeed(chunkSeed);
 
 		for (DenseOre denseOre : DenseOresRegistry.ores.values()) {
@@ -105,7 +105,7 @@ public class WorldGenOres implements IWorldGenerator {
 		}
 
 		if (regen)
-			event.getChunk().setChunkModified();
+			event.getChunk().setModified(true);
 
 	}
 
